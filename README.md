@@ -15,4 +15,4 @@ Moduł zarządzania zaopatrzeniem będzie odpowiadał za kontrolę stanu i iloś
 System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na łatwe i szybkie korzystanie z niego z dowolnego miejsca i urządzenia.
 
 # Model pojęciowy
-![klinika weterynaryjna](images/klinika_weterynaryjna.png)
+![klinika weterynaryjna](images/klinika_model_pojeciowy.png)
