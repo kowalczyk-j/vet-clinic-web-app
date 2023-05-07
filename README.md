@@ -18,7 +18,7 @@ System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na ła
 ![klinika weterynaryjna model er](images/klinika_weterynaryjna-model_ER.png)
 
 # Model logiczny
-![klinika weterynaryjna model logiczny](images/klinika_weterynaryjna_-_model_logiczny.png)
+![klinika weterynaryjna model logiczny](images/klinika_weterynaryjna-model_logiczny.png)
 
 # Wstępne założenia projektowe:
 
