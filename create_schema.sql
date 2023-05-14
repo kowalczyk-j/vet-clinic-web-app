@@ -55,8 +55,8 @@ CREATE TABLE position (
   position_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(50) NOT NULL UNIQUE,
   description VARCHAR(100),
-  salary_min DECIMAL(5, 2),
-  salary_max DECIMAL(5, 2),
+  salary_min DECIMAL(7, 2),
+  salary_max DECIMAL(7, 2),
   PRIMARY KEY (position_id)
 );
 
@@ -67,9 +67,9 @@ CREATE TABLE employee (
   surname VARCHAR(50) NOT NULL,
   phone_number VARCHAR(12) NOT NULL UNIQUE,
   address VARCHAR(100) NOT NULL,
-  salary DECIMAL(5, 2) NOT NULL,
+  salary DECIMAL(7, 2) NOT NULL,
   employment_date DATE,
-  bonus DECIMAL(5, 2),
+  bonus DECIMAL(7, 2),
   PRIMARY KEY (employee_id)
 );
 
@@ -116,7 +116,7 @@ CREATE TABLE procedure_appointment (
 CREATE TABLE employee_schedule (
   schedule_id INT NOT NULL AUTO_INCREMENT,
   employee_id INT NOT NULL,
-  week_day CHAR(2) NOT NULL,
+  week_day CHAR(3) NOT NULL,
   hour_start TIME,
   hour_end TIME,
   PRIMARY KEY (schedule_id),
@@ -125,7 +125,7 @@ CREATE TABLE employee_schedule (
 
 CREATE TABLE payment_method (
   method_id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(10),
+  name VARCHAR(20),
   PRIMARY KEY (method_id)
 );
 
@@ -133,7 +133,7 @@ CREATE TABLE payment (
   payment_id INT NOT NULL AUTO_INCREMENT,
   appointment_id INT NOT NULL,
   method_id INT NOT NULL,
-  amount DECIMAL(4, 2) NOT NULL,
+  amount DECIMAL(6, 2),
   date_paid DATETIME,
   PRIMARY KEY (payment_id),
   FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id),
@@ -162,7 +162,7 @@ CREATE TABLE inventory (
   object_id INT NOT NULL AUTO_INCREMENT,
   unit_id INT,
   name VARCHAR(50) NOT NULL,
-  amount DECIMAL(4, 2),
+  amount DECIMAL(6, 2),
   best_before DATE,
   PRIMARY KEY (object_id),
   FOREIGN KEY (unit_id) REFERENCES unit_of_measure(unit_id)
