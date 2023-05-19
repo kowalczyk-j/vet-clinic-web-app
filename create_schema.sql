@@ -6,10 +6,11 @@ CREATE TABLE owner (
     owner_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
     surname VARCHAR(50) NOT NULL,
-    address VARCHAR(100),
-    phone_number VARCHAR(12),
+    address VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(12) NOT NULL,
     pesel VARCHAR(11) NOT NULL,
-    PRIMARY KEY (owner_id)
+    PRIMARY KEY (owner_id),
+    CONSTRAINT unique_pesel UNIQUE (pesel)
 );
 
 CREATE TABLE animal (
@@ -22,7 +23,7 @@ CREATE TABLE animal (
   gender CHAR(1) CONSTRAINT gender_check CHECK (gender IN ('F', 'M')),
   birthdate DATE,
   PRIMARY KEY (animal_id),
-  FOREIGN KEY (owner_id) REFERENCES owner(owner_id)
+  FOREIGN KEY (owner_id) REFERENCES owner(owner_id) ON DELETE CASCADE
 );
 
 CREATE TABLE disease (
@@ -184,3 +185,87 @@ CREATE TABLE room_medical_equipment (
   FOREIGN KEY (equipment_id) REFERENCES medical_equipment(equipment_id),
   FOREIGN KEY (room_id) REFERENCES room(room_id)
 );
+
+
+
+DELIMITER //
+CREATE TRIGGER check_last_inspection_date
+BEFORE INSERT ON room_medical_equipment
+FOR EACH ROW
+BEGIN
+  IF NEW.last_inspection IS NULL OR NEW.last_inspection > NOW() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid inspection date';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_payment_timestamp
+BEFORE INSERT ON payment
+FOR EACH ROW
+BEGIN
+  IF NEW.date_paid IS NULL OR NEW.date_paid > NOW() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid payment timestamp';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_animal_birthdate
+BEFORE INSERT ON animal
+FOR EACH ROW
+BEGIN
+  IF NEW.birthdate IS NULL OR NEW.birthdate > CURDATE() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid animal birthdate';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_employment_date
+BEFORE INSERT ON employee
+FOR EACH ROW
+BEGIN
+  IF NEW.employment_date IS NULL OR NEW.employment_date > CURDATE() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid employment date';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_disease_timetable
+BEFORE INSERT ON disease_history
+FOR EACH ROW
+BEGIN
+  IF (NEW.recovery_date IS NULL OR NEW.recovery_date > CURDATE())
+  AND (NEW.diagnosis_date IS NULL OR NEW.diagnosis_date > CURDATE())
+  THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid diagnosis date or recovery date';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_number_format
+BEFORE INSERT ON owner
+FOR EACH ROW
+BEGIN
+    IF LENGTH(NEW.phone_number) != 9 OR NEW.phone_number NOT REGEXP '^[0-9]+$' THEN
+      SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'Invalid phone number format';
+    END IF;
+END //
+
+
+CREATE TRIGGER check_owner_existence
+BEFORE INSERT ON animal
+FOR EACH ROW
+BEGIN
+DECLARE owner_id_exists INT;
+
+SELECT 1 INTO owner_id_exists
+FROM owner
+WHERE owner_id = NEW.owner_id
+LIMIT 1;
+
+IF owner_id_exists IS NULL THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Cannot add animal without an existing owner';
+END IF;
+END //
+DELIMITER ;
