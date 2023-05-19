@@ -41,12 +41,86 @@ System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na ła
 7. **Raportowanie** - system powinien umożliwiać generowanie raportów z różnych obszarów działalności przychodni (np. liczba pacjentów, ilość wizyt, sprzedaż, itp.). Raporty powinny być dostępne dla menedżera w celu monitorowania efektywności działalności.
 
 
-## Wymagania niefunkcjonalne
+## Wymagania niefunkcjonalne:
 1. **Wydajność** - System powinien być wydajny i działać płynnie, nawet przy dużej ilości użytkowników i danych. Nie powinno być opóźnień ani awarii, które wpłyną na jakość obsługi pacjentów i wydajność personelu.
 2. **Dostępność** - System powinien być łatwo dostępny z różnych urządzeń i miejsc, aby personel przychodni mógł uzyskać do niego dostęp w dowolnym czasie i miejscu. Powinien być dostępny przez przeglądarkę internetową na każdym urządzeniu.
 3. **Intuicyjność i łatwość obsługi** - System powinien być łatwy w obsłudze, a interfejs użytkownika powinien być intuicyjny i przyjazny dla użytkownika. Personel powinien łatwo znajdować potrzebne funkcje i korzystać z nich bez problemów.
 4. **Bezpieczeństwo fizyczne** - System powinien być chroniony przed zagrożeniami fizycznymi, takimi jak pożary, powodzie, kradzieże lub uszkodzenia sprzętu. Powinien być przechowywany w bezpiecznym miejscu i posiadać regularnie tworzone kopie zapasowe.
 5. **Integracja z innymi systemami** - System powinien umożliwiać integrację z innymi systemami, takimi jak system księgowy, systemy do zarządzania magazynem i innymi. Umożliwi to płynne przepływanie informacji między różnymi systemami i usprawni procesy w przychodni.
 6. **Dostęp do wsparcia technicznego** - System powinien być dostępny z pomocą techniczną dla personelu, który potrzebuje pomocy technicznej lub szkolenia w zakresie korzystania z systemu. Powinien być łatwy w utrzymaniu i dostępny z narzędziami do zarządzania błędami.
+
+
+## Scenariusze testów:
+Moduł zarządzania pacjentami:
+a. Testowanie dodawania nowych pacjentów do bazy danych.
+Sprawdzenie czy można poprawnie dodać informacje o zwierzęciu i jego właścicielu.
+Upewnienie się, że historia chorób i przebieg leczenia są prawidłowo zapisane.
+b. Testowanie edycji informacji o zwierzętach i ich właścicielach.
+Zmiana danych właściciela i zwierzęcia i sprawdzenie, czy zmiany zostały zapisane poprawnie.
+c. Testowanie generowania raportów o pacjentach, takich jak najczęstsze choroby, przepisane leki, zabiegi.
+Wygenerowanie raportów o najczęstszych chorobach, przepisanych lekach i zabiegach i sprawdzenie, czy dane są dokładne i zgodne z oczekiwaniami.
+
+Moduł wizyt:
+a. Testowanie rezerwacji terminów wizyt przez pracowników przychodni.
+Próba rezerwacji terminu wizyty przez pracowników przychodni i sprawdzenie, czy termin jest poprawnie zarejestrowany.
+b. Testowanie systemu rezerwacji online dla klientów.
+Rejestracja klienta i próba dokonania rezerwacji wizyty online, upewnienie się, że wizyta jest poprawnie dodana do systemu.
+c. Testowanie możliwości przełożenia lub odwołania wizyty przez klienta.
+d. Testowanie zapisywania notatek, wyników badań i zaleconych leków przez lekarza.
+e. Testowanie generowania raportów wraz z automatyczną fakturą za usługi.
+
+Moduł zarządzania kadrami:
+a. Testowanie rozporządzania harmonogramem pracy pracowników przez menedżera.
+Próba tworzenia harmonogramu pracy i upewnienie się, że zmiany są poprawnie zapisywane.
+b. Testowanie rewizji dostępności pracowników.
+c. Testowanie przypisywania obowiązków do konkretnych pracowników.
+Sprawdzenie, czy można przypisać konkretnym pracownikom odpowiednie obowiązki i upewnić się, że są one prawidłowo zapisane.
+d. Testowanie przyznawania nagród lub podwyżek pensji na podstawie danych o czasie pracy, liczbie świadczeń i satysfakcji klientów.
+
+Moduł zarządzania zaopatrzeniem:
+a. Testowanie kontroli stanu i ilości narzędzi, opatrunków i substancji medycznych.
+Sprawdzenie, czy system prawidłowo monitoruje stan narzędzi i informuje o potrzebie uzupełnienia zapasów.
+b. Testowanie rozlokowania inwentarza w różnych salach operacyjnych.
+Upewnienie się, że inwentarz jest poprawnie rozmieszczony w różnych salach operacyjnych.
+c. Testowanie aktualizacji stanu sprzętu po operacji lub przeniesieniu przedmiotów.
+d. Testowanie możliwości edycji stanu sprzętu przez menedżera.
+
+Integracja danych:
+a. Testowanie spójności danych dla każdej wizyty, zwierzęcia i właściciela.
+b. Testowanie przypisywania właściwych lekarzy, numerów sal i rodzajów zabiegów do wizyt.
+c. Testowanie aktualizacji danych w historii chorób zwierząt.
+
+Opłaty:
+a. Testowanie przypisywania odpowiednich kosztów do wizyt na podstawie przeprowadzonych zabiegów i leków.
+b. Testowanie generowania faktur dla klientów na podstawie danych zakończonej wizyty.
+c. Testowanie różnych metod płatności: gotówka, karta, BLIK, voucher.
+
+Grafik pracowników:
+a. Testowanie poprawności przypisywania przedziałów godzinowych pracy dla pracowników.
+b. Testowanie uwzględniania dni wolnych, niedziel i świąt państwowych w harmonogramie pracy.
+c. Testowanie zarządzania grafikiem pracy wyłącznie przez menedżera.
+
+W przypadku każdego modułu testowego należy sprawdzić, czy interakcje między modułami działają poprawnie i przekazują prawidłowe dane. Należy również przetestować sytuacje wyjątkowe i obsługę błędów, takie jak próba dostępu do danych przez nieuprawnionego użytkownika, brak wymaganych pól w formularzach itp.
+
+
+
+(możliwe do dodania :
+Testowanie bezpieczeństwa:
+a. Przeprowadzenie testów penetracyjnych, aby sprawdzić, czy system jest odporny na ataki zewnętrzne.
+b. Testowanie mechanizmów uwierzytelniania i uprawnień, aby upewnić się, że dostęp do danych jest odpowiednio chroniony.
+
+Testowanie wydajności:
+a. Przeprowadzenie testów obciążeniowych, aby ocenić wydajność systemu podczas dużej liczby użytkowników i transakcji.
+b. Sprawdzenie czasu odpowiedzi systemu i szybkości przetwarzania różnych operacji.
+
+Testowanie przywracania danych:
+a. Wykonanie testów przywracania danych po awarii systemu lub utracie połączenia, aby upewnić się, że dane są bezpieczne i można je przywrócić w przypadku problemów technicznych.
+
+Interfejs i dostęp:
+a. Testowanie dostępności systemu z poziomu przeglądarki internetowej.
+b. Testowanie łatwości korzystania z systemu z różnych urządzeń.
+c. Testowanie uprawnień dostępu dla personelu i właściciela kliniki.
+)
+
 
 
