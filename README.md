@@ -51,75 +51,117 @@ System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na ła
 
 
 ## Scenariusze testów:
-Moduł zarządzania pacjentami:
-a. Testowanie dodawania nowych pacjentów do bazy danych.
+**Moduł zarządzania pacjentami:**
+
+**a.** Testowanie dodawania nowych pacjentów do bazy danych.
+
 Sprawdzenie czy można poprawnie dodać informacje o zwierzęciu i jego właścicielu.
 Upewnienie się, że historia chorób i przebieg leczenia są prawidłowo zapisane.
-b. Testowanie edycji informacji o zwierzętach i ich właścicielach.
+
+**b.** Testowanie edycji informacji o zwierzętach i ich właścicielach.
 Zmiana danych właściciela i zwierzęcia i sprawdzenie, czy zmiany zostały zapisane poprawnie.
-c. Testowanie generowania raportów o pacjentach, takich jak najczęstsze choroby, przepisane leki, zabiegi.
+
+**c.** Testowanie generowania raportów o pacjentach, takich jak najczęstsze choroby, przepisane leki, zabiegi.
+
 Wygenerowanie raportów o najczęstszych chorobach, przepisanych lekach i zabiegach i sprawdzenie, czy dane są dokładne i zgodne z oczekiwaniami.
 
-Moduł wizyt:
-a. Testowanie rezerwacji terminów wizyt przez pracowników przychodni.
+**Moduł wizyt:**
+
+**a.** Testowanie rezerwacji terminów wizyt przez pracowników przychodni.
+
 Próba rezerwacji terminu wizyty przez pracowników przychodni i sprawdzenie, czy termin jest poprawnie zarejestrowany.
-b. Testowanie systemu rezerwacji online dla klientów.
+
+**b.** Testowanie systemu rezerwacji online dla klientów.
+
 Rejestracja klienta i próba dokonania rezerwacji wizyty online, upewnienie się, że wizyta jest poprawnie dodana do systemu.
-c. Testowanie możliwości przełożenia lub odwołania wizyty przez klienta.
-d. Testowanie zapisywania notatek, wyników badań i zaleconych leków przez lekarza.
-e. Testowanie generowania raportów wraz z automatyczną fakturą za usługi.
 
-Moduł zarządzania kadrami:
-a. Testowanie rozporządzania harmonogramem pracy pracowników przez menedżera.
+**c.** Testowanie możliwości przełożenia lub odwołania wizyty przez klienta.
+
+**d.** Testowanie zapisywania notatek, wyników badań i zaleconych leków przez lekarza.
+
+**e.** Testowanie generowania raportów wraz z automatyczną fakturą za usługi.
+
+**Moduł zarządzania kadrami:**
+
+**a.** Testowanie rozporządzania harmonogramem pracy pracowników przez menedżera.
+
 Próba tworzenia harmonogramu pracy i upewnienie się, że zmiany są poprawnie zapisywane.
-b. Testowanie rewizji dostępności pracowników.
-c. Testowanie przypisywania obowiązków do konkretnych pracowników.
+
+**b.** Testowanie rewizji dostępności pracowników.
+
+**c.** Testowanie przypisywania obowiązków do konkretnych pracowników.
+
 Sprawdzenie, czy można przypisać konkretnym pracownikom odpowiednie obowiązki i upewnić się, że są one prawidłowo zapisane.
-d. Testowanie przyznawania nagród lub podwyżek pensji na podstawie danych o czasie pracy, liczbie świadczeń i satysfakcji klientów.
 
-Moduł zarządzania zaopatrzeniem:
-a. Testowanie kontroli stanu i ilości narzędzi, opatrunków i substancji medycznych.
+**d.** Testowanie przyznawania nagród lub podwyżek pensji na podstawie danych o czasie pracy, liczbie świadczeń i satysfakcji klientów.
+
+**Moduł zarządzania zaopatrzeniem:**
+
+**a.** Testowanie kontroli stanu i ilości narzędzi, opatrunków i substancji medycznych.
+
 Sprawdzenie, czy system prawidłowo monitoruje stan narzędzi i informuje o potrzebie uzupełnienia zapasów.
-b. Testowanie rozlokowania inwentarza w różnych salach operacyjnych.
+
+**b.** Testowanie rozlokowania inwentarza w różnych salach operacyjnych.
+
 Upewnienie się, że inwentarz jest poprawnie rozmieszczony w różnych salach operacyjnych.
-c. Testowanie aktualizacji stanu sprzętu po operacji lub przeniesieniu przedmiotów.
-d. Testowanie możliwości edycji stanu sprzętu przez menedżera.
 
-Integracja danych:
-a. Testowanie spójności danych dla każdej wizyty, zwierzęcia i właściciela.
-b. Testowanie przypisywania właściwych lekarzy, numerów sal i rodzajów zabiegów do wizyt.
-c. Testowanie aktualizacji danych w historii chorób zwierząt.
+**c.** Testowanie aktualizacji stanu sprzętu po operacji lub przeniesieniu przedmiotów.
 
-Opłaty:
-a. Testowanie przypisywania odpowiednich kosztów do wizyt na podstawie przeprowadzonych zabiegów i leków.
-b. Testowanie generowania faktur dla klientów na podstawie danych zakończonej wizyty.
-c. Testowanie różnych metod płatności: gotówka, karta, BLIK, voucher.
+**d.** Testowanie możliwości edycji stanu sprzętu przez menedżera.
 
-Grafik pracowników:
-a. Testowanie poprawności przypisywania przedziałów godzinowych pracy dla pracowników.
-b. Testowanie uwzględniania dni wolnych, niedziel i świąt państwowych w harmonogramie pracy.
-c. Testowanie zarządzania grafikiem pracy wyłącznie przez menedżera.
+**Integracja danych:**
+
+**a.** Testowanie spójności danych dla każdej wizyty, zwierzęcia i właściciela.
+
+**b.** Testowanie przypisywania właściwych lekarzy, numerów sal i rodzajów zabiegów do wizyt.
+
+**c.** Testowanie aktualizacji danych w historii chorób zwierząt.
+
+**Opłaty:**
+
+**a.** Testowanie przypisywania odpowiednich kosztów do wizyt na podstawie przeprowadzonych zabiegów i leków.
+
+**b.** Testowanie generowania faktur dla klientów na podstawie danych zakończonej wizyty.
+
+**c.** Testowanie różnych metod płatności: gotówka, karta, BLIK, voucher.
+
+**Grafik pracowników:**
+
+**a.** Testowanie poprawności przypisywania przedziałów godzinowych pracy dla pracowników.
+
+**b.** Testowanie uwzględniania dni wolnych, niedziel i świąt państwowych w harmonogramie pracy.
+
+**c.** Testowanie zarządzania grafikiem pracy wyłącznie przez menedżera.
 
 W przypadku każdego modułu testowego należy sprawdzić, czy interakcje między modułami działają poprawnie i przekazują prawidłowe dane. Należy również przetestować sytuacje wyjątkowe i obsługę błędów, takie jak próba dostępu do danych przez nieuprawnionego użytkownika, brak wymaganych pól w formularzach itp.
 
 
 
 (możliwe do dodania :
-Testowanie bezpieczeństwa:
-a. Przeprowadzenie testów penetracyjnych, aby sprawdzić, czy system jest odporny na ataki zewnętrzne.
-b. Testowanie mechanizmów uwierzytelniania i uprawnień, aby upewnić się, że dostęp do danych jest odpowiednio chroniony.
 
-Testowanie wydajności:
-a. Przeprowadzenie testów obciążeniowych, aby ocenić wydajność systemu podczas dużej liczby użytkowników i transakcji.
-b. Sprawdzenie czasu odpowiedzi systemu i szybkości przetwarzania różnych operacji.
+**Testowanie bezpieczeństwa:**
 
-Testowanie przywracania danych:
-a. Wykonanie testów przywracania danych po awarii systemu lub utracie połączenia, aby upewnić się, że dane są bezpieczne i można je przywrócić w przypadku problemów technicznych.
+**a.** Przeprowadzenie testów penetracyjnych, aby sprawdzić, czy system jest odporny na ataki zewnętrzne.
 
-Interfejs i dostęp:
-a. Testowanie dostępności systemu z poziomu przeglądarki internetowej.
-b. Testowanie łatwości korzystania z systemu z różnych urządzeń.
-c. Testowanie uprawnień dostępu dla personelu i właściciela kliniki.
+**b.** Testowanie mechanizmów uwierzytelniania i uprawnień, aby upewnić się, że dostęp do danych jest odpowiednio chroniony.
+
+**Testowanie wydajności:**
+
+**a.** Przeprowadzenie testów obciążeniowych, aby ocenić wydajność systemu podczas dużej liczby użytkowników i transakcji.
+
+**b.** Sprawdzenie czasu odpowiedzi systemu i szybkości przetwarzania różnych operacji.
+
+**Testowanie przywracania danych:**
+
+**a.** Wykonanie testów przywracania danych po awarii systemu lub utracie połączenia, aby upewnić się, że dane są bezpieczne i można je przywrócić w przypadku problemów technicznych.
+
+**Interfejs i dostęp:**
+
+**a.** Testowanie dostępności systemu z poziomu przeglądarki internetowej.
+
+**b.** Testowanie łatwości korzystania z systemu z różnych urządzeń.
+
+**c.** Testowanie uprawnień dostępu dla personelu i właściciela kliniki.
 )
 
 
