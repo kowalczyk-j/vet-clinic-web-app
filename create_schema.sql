@@ -88,19 +88,18 @@ CREATE TABLE vet (
 CREATE TABLE room (
   room_id INT NOT NULL AUTO_INCREMENT,
   room_number VARCHAR(3),
+  type VARCHAR(50),
   PRIMARY KEY (room_id)
 );
 
 CREATE TABLE appointment (
   appointment_id INT NOT NULL AUTO_INCREMENT,
-  procedure_id INT,
   vet_id INT,
   room_id INT,
   animal_id INT NOT NULL,
   date DATE,
   time TIME,
   PRIMARY KEY (appointment_id),
-  FOREIGN KEY (procedure_id) REFERENCES medical_procedure(procedure_id),
   FOREIGN KEY (vet_id) REFERENCES vet(vet_id),
   FOREIGN KEY (room_id) REFERENCES room(room_id),
   FOREIGN KEY (animal_id) REFERENCES animal(animal_id)
@@ -162,7 +161,7 @@ CREATE TABLE inventory (
   object_id INT NOT NULL AUTO_INCREMENT,
   unit_id INT,
   name VARCHAR(50) NOT NULL,
-  amount DECIMAL(6, 2),
+  amount DECIMAL(8, 2),
   best_before DATE,
   PRIMARY KEY (object_id),
   FOREIGN KEY (unit_id) REFERENCES unit_of_measure(unit_id)
