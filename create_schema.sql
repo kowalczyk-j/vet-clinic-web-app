@@ -69,7 +69,7 @@ CREATE TABLE employee (
   phone_number VARCHAR(12) NOT NULL UNIQUE,
   address VARCHAR(100) NOT NULL,
   salary DECIMAL(7, 2) NOT NULL,
-  employment_date DATE,
+  employment_date DATE DEFAULT (CURRENT_DATE),
   bonus DECIMAL(7, 2),
   PRIMARY KEY (employee_id)
 );
@@ -223,7 +223,7 @@ CREATE TRIGGER check_employment_date
 BEFORE INSERT ON employee
 FOR EACH ROW
 BEGIN
-  IF NEW.employment_date IS NULL OR NEW.employment_date > CURDATE() THEN
+  IF NEW.employment_date > CURDATE() THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid employment date';
   END IF;
 END //
@@ -440,4 +440,69 @@ BEGIN
         SET MESSAGE_TEXT = 'Vet is not available at that time';
     END IF;
 END //
+
+
+CREATE TRIGGER check_salary_range_insert
+BEFORE INSERT ON employee
+FOR EACH ROW
+BEGIN
+    DECLARE min_salary DECIMAL(7, 2);
+    DECLARE max_salary DECIMAL(7, 2);
+
+    SELECT salary_min, salary_max INTO min_salary, max_salary
+    FROM position
+    WHERE position_id = NEW.position_id;
+
+    IF NEW.salary < min_salary OR NEW.salary > max_salary THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Salary is out of range defined to this position';
+    END IF;
+END //
+
+
+CREATE TRIGGER check_salary_range_update
+BEFORE UPDATE ON employee
+FOR EACH ROW
+BEGIN
+    DECLARE min_salary DECIMAL(7, 2);
+    DECLARE max_salary DECIMAL(7, 2);
+
+    SELECT salary_min, salary_max INTO min_salary, max_salary
+    FROM position
+    WHERE position_id = NEW.position_id;
+
+    IF NEW.salary < min_salary OR NEW.salary > max_salary THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Salary is out of range defined to this position';
+    END IF;
+END //
+
+
+CREATE TRIGGER check_schedule_insert_conflict
+BEFORE INSERT ON employee_schedule
+FOR EACH ROW
+BEGIN
+    DECLARE existing_schedule INT;
+
+    SET existing_schedule = (
+        SELECT COUNT(*)
+        FROM employee_schedule
+        WHERE employee_id = NEW.employee_id
+        AND week_day = NEW.week_day
+    );
+
+    IF existing_schedule > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Graphic conflict. This employee already has tasks scheduled for that day.';
+    END IF;
+END //
+
+
+CREATE TRIGGER check_schedule_day_format
+BEFORE INSERT ON employee_schedule
+FOR EACH ROW
+BEGIN
+    IF NEW.week_day NOT IN ('Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid weekday format. Give one of: Pon, Wt, Śr, Czw, Pt, Sob.';
+    END IF;
+END //
+
+
 DELIMITER ;
