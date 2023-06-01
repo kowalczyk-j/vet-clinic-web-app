@@ -109,7 +109,7 @@ CREATE TABLE appointment (
 CREATE TABLE procedure_appointment (
     appointment_id INT NOT NULL,
     procedure_id INT NOT NULL,
-    FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id),
+    FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id) ON DELETE CASCADE,
     FOREIGN KEY (procedure_id) REFERENCES medical_procedure(procedure_id)
 );
 
@@ -136,7 +136,7 @@ CREATE TABLE payment (
   amount DECIMAL(6, 2),
   date_paid DATETIME,
   PRIMARY KEY (payment_id),
-  FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id),
+  FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id) ON DELETE CASCADE,
   FOREIGN KEY (method_id) REFERENCES payment_method(method_id)
 );
 
@@ -203,7 +203,7 @@ CREATE TRIGGER check_payment_timestamp
 BEFORE INSERT ON payment
 FOR EACH ROW
 BEGIN
-  IF NEW.date_paid IS NULL OR NEW.date_paid > NOW() THEN
+  IF NEW.date_paid > NOW() THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid payment timestamp';
   END IF;
 END //
@@ -267,5 +267,177 @@ IF owner_id_exists IS NULL THEN
 SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'Cannot add animal without an existing owner';
 END IF;
+END //
+
+
+CREATE TRIGGER check_duplicate_appointment_animal_insert
+BEFORE INSERT ON appointment
+FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT * FROM appointment
+        WHERE animal_id = NEW.animal_id
+        AND appointment_id != NEW.appointment_id
+        AND date = NEW.date
+        AND time = NEW.time
+    )
+    THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Animal already has appointment at that time';
+    END IF;
+END //
+
+
+CREATE TRIGGER check_duplicate_appointment_animal_update
+BEFORE UPDATE ON appointment
+FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT * FROM appointment
+        WHERE animal_id = NEW.animal_id
+        AND appointment_id != NEW.appointment_id
+        AND date = NEW.date
+        AND time = NEW.time
+    )
+    THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Animal already has appointment at that time';
+    END IF;
+END //
+
+
+CREATE TRIGGER prevent_appointments_in_past
+BEFORE INSERT ON appointment
+FOR EACH ROW
+BEGIN
+  IF NEW.date < CURDATE() THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Cannot create appointment in the past';
+  END IF;
+END //
+
+
+CREATE TRIGGER prevent_appointment_updates_in_past
+BEFORE UPDATE ON appointment
+FOR EACH ROW
+BEGIN
+  IF NEW.date < CURDATE() THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Cannot reschedule appointment into the past';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_vet_availability_insert
+BEFORE INSERT ON appointment
+FOR EACH ROW
+BEGIN
+  DECLARE num_appointments INT;
+  SET num_appointments = (
+      SELECT COUNT(*) FROM appointment a
+      WHERE a.vet_id = NEW.vet_id
+      AND a.date = NEW.date
+      AND a.time <= NEW.time
+      AND a.time + (SELECT SUM(mp.estimate_time) FROM medical_procedure mp
+                    JOIN procedure_appointment pa on mp.procedure_id = pa.procedure_id
+                    WHERE mp.procedure_id = pa.procedure_id
+                    AND pa.appointment_id = a.appointment_id) >= NEW.time
+  );
+  IF num_appointments != 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Vet already has appointment at that time';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_vet_availability_update
+BEFORE UPDATE ON appointment
+FOR EACH ROW
+BEGIN
+  DECLARE num_appointments INT;
+  SET num_appointments = (
+      SELECT COUNT(*) FROM appointment a
+      WHERE a.vet_id = NEW.vet_id
+      AND a.date = NEW.date
+      AND a.time <= NEW.time
+      AND a.time + (SELECT SUM(mp.estimate_time) FROM medical_procedure mp
+                    JOIN procedure_appointment pa on mp.procedure_id = pa.procedure_id
+                    WHERE mp.procedure_id = pa.procedure_id
+                    AND pa.appointment_id = a.appointment_id) >= NEW.time
+  );
+  IF num_appointments != 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Vet already has appointment at that time';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_vet_schedule_insert
+BEFORE INSERT ON appointment
+FOR EACH ROW
+BEGIN
+    DECLARE appointment_day_of_week INT;
+    DECLARE day_of_week_to_char CHAR(3);
+    DECLARE vets_employee_id INT;
+
+    SET appointment_day_of_week = DAYOFWEEK(NEW.date);
+
+    SET day_of_week_to_char = CASE
+        WHEN appointment_day_of_week = 1 THEN 'Ndz'
+        WHEN appointment_day_of_week = 2 THEN 'Pon'
+        WHEN appointment_day_of_week = 3 THEN 'Wt'
+        WHEN appointment_day_of_week = 4 THEN 'Śr'
+        WHEN appointment_day_of_week = 5 THEN 'Czw'
+        WHEN appointment_day_of_week = 6 THEN 'Pt'
+        WHEN appointment_day_of_week = 7 THEN 'Sob'
+    END;
+
+    SELECT employee_id INTO vets_employee_id FROM vet WHERE vet.vet_id = NEW.vet_id;
+
+    IF NOT EXISTS (
+        SELECT * FROM employee_schedule es
+        WHERE es.employee_id = vets_employee_id
+        AND es.week_day = day_of_week_to_char
+        AND NEW.time >= es.hour_start
+        AND NEW.time < es.hour_end
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Vet is not available at that time';
+    END IF;
+END //
+
+
+CREATE TRIGGER check_vet_schedule_update
+BEFORE UPDATE ON appointment
+FOR EACH ROW
+BEGIN
+    DECLARE appointment_day_of_week INT;
+    DECLARE day_of_week_to_char CHAR(3);
+    DECLARE vets_employee_id INT;
+
+    SET appointment_day_of_week = DAYOFWEEK(NEW.date);
+
+    SET day_of_week_to_char = CASE
+        WHEN appointment_day_of_week = 1 THEN 'Ndz'
+        WHEN appointment_day_of_week = 2 THEN 'Pon'
+        WHEN appointment_day_of_week = 3 THEN 'Wt'
+        WHEN appointment_day_of_week = 4 THEN 'Śr'
+        WHEN appointment_day_of_week = 5 THEN 'Czw'
+        WHEN appointment_day_of_week = 6 THEN 'Pt'
+        WHEN appointment_day_of_week = 7 THEN 'Sob'
+    END;
+
+    SELECT employee_id INTO vets_employee_id FROM vet WHERE vet.vet_id = NEW.vet_id;
+
+    IF NOT EXISTS (
+        SELECT * FROM employee_schedule es
+        WHERE es.employee_id = vets_employee_id
+        AND es.week_day = day_of_week_to_char
+        AND NEW.time >= es.hour_start
+        AND NEW.time < es.hour_end
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Vet is not available at that time';
+    END IF;
 END //
 DELIMITER ;
