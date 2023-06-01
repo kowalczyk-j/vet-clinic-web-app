@@ -84,16 +84,18 @@ Wygenerowanie raportów o najczęstszych chorobach, przepisanych lekach i zabieg
 **Moduł zarządzania kadrami:**
 
 **a.** Testowanie rozporządzania harmonogramem pracy pracowników przez menedżera.
-
-Próba tworzenia harmonogramu pracy i upewnienie się, że zmiany są poprawnie zapisywane.
+- odpowiedni format wprowadzanych danych do harmonogramu
+- wykrywanie konfilktów przy zmianach w harmonogramie
 
 **b.** Testowanie rewizji dostępności pracowników.
+- sprawdzenie dostępności pracowników w zależności od stanowiska
+- sprawdzenie dostępności konkretnego pracownika w danym dniu i godzinie
 
-**c.** Testowanie przypisywania obowiązków do konkretnych pracowników.
+**c.** Testowanie przyznawania nagród lub podwyżek pensji na podstawie danych o czasie pracy, liczbie świadczeń i satysfakcji klientów.
 
-Sprawdzenie, czy można przypisać konkretnym pracownikom odpowiednie obowiązki i upewnić się, że są one prawidłowo zapisane.
+**d.** Testowanie poprawności przypisywania przedziałów godzinowych pracy dla pracowników.
 
-**d.** Testowanie przyznawania nagród lub podwyżek pensji na podstawie danych o czasie pracy, liczbie świadczeń i satysfakcji klientów.
+**e.** Testowanie zarządzania grafikiem pracy wyłącznie przez menedżera.
 
 **Moduł zarządzania zaopatrzeniem:**
 
@@ -124,14 +126,6 @@ Upewnienie się, że inwentarz jest poprawnie rozmieszczony w różnych salach o
 **b.** Testowanie generowania faktur dla klientów na podstawie danych zakończonej wizyty.
 
 **c.** Testowanie różnych metod płatności: gotówka, karta, BLIK, voucher.
-
-**Grafik pracowników:**
-
-**a.** Testowanie poprawności przypisywania przedziałów godzinowych pracy dla pracowników.
-
-**b.** Testowanie uwzględniania dni wolnych, niedziel i świąt państwowych w harmonogramie pracy.
-
-**c.** Testowanie zarządzania grafikiem pracy wyłącznie przez menedżera.
 
 W przypadku każdego modułu testowego należy sprawdzić, czy interakcje między modułami działają poprawnie i przekazują prawidłowe dane. Należy również przetestować sytuacje wyjątkowe i obsługę błędów, takie jak próba dostępu do danych przez nieuprawnionego użytkownika, brak wymaganych pól w formularzach itp.
 
