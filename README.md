@@ -67,19 +67,19 @@ Wygenerowanie raportów o najczęstszych chorobach, przepisanych lekach i zabieg
 
 **Moduł wizyt:**
 
-**a.** Testowanie rezerwacji terminów wizyt przez pracowników przychodni.
+**a.** Testowanie rezerwacji terminów wizyt.
+- termin wizyty nie może być w przeszłości
+- lekarz musi być w danym terminie dostępny (zgodnie z harmonogramem pracownika)
+- lekarz nie może mieć w tym czasie innej wizyty
 
-Próba rezerwacji terminu wizyty przez pracowników przychodni i sprawdzenie, czy termin jest poprawnie zarejestrowany.
+**b.** Testowanie możliwości przełożenia lub odwołania wizyty przez klienta.
+- termin nie może być przełożony na przeszłość
+- lekarz musi być w przełożonym czasie dostępny
+- odwołanie wizyty skutkuje usunięciem z bazy danych powiązanych rekordów (płatność, umówione)
 
-**b.** Testowanie systemu rezerwacji online dla klientów.
+**c.** Testowanie zapisywania notatek, wyników badań i zaleconych leków przez lekarza.
 
-Rejestracja klienta i próba dokonania rezerwacji wizyty online, upewnienie się, że wizyta jest poprawnie dodana do systemu.
-
-**c.** Testowanie możliwości przełożenia lub odwołania wizyty przez klienta.
-
-**d.** Testowanie zapisywania notatek, wyników badań i zaleconych leków przez lekarza.
-
-**e.** Testowanie generowania raportów wraz z automatyczną fakturą za usługi.
+**d.** Testowanie generowania raportów wraz z automatyczną fakturą za usługi.
 
 **Moduł zarządzania kadrami:**
 
