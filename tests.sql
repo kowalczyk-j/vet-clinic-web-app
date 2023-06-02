@@ -124,6 +124,7 @@ GROUP BY procedure
 ORDER BY performed DESC;
 
 # MODUŁ INWENTARZU
+
 # Dodanie obiektu o błednej ilości
 INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
 (2, 'Karma sucha', -6000.00, '2024-01-01');
