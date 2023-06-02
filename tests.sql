@@ -1,3 +1,5 @@
+# MODUŁ WIZYT
+
 # nie da się umówić wizyty, jeśli lekarz jest w danym terminie zajęty
 INSERT INTO appointment VALUE (31, 3, 1, 9, '2023-07-25', '16:30:00');
 INSERT INTO procedure_appointment VALUE (31, 1);
@@ -115,9 +117,28 @@ GROUP BY d.name
 ORDER BY occurrences DESC;
 
 # Generowanie raportu o zabiegach
-
 SELECT p.name AS procedure, COUNT(*) AS performed
 FROM procedure_appointment pa
 JOIN procedure p ON pa.procedure_id = p.procedure_id
 GROUP BY procedure
 ORDER BY performed DESC;
+
+# MODUŁ INWENTARZU
+# Dodanie obiektu o błednej ilości
+INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
+(2, 'Karma sucha', -6000.00, '2024-01-01');
+
+# Dodanie powtarzającego się obiektu
+INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
+(2, 'Karma sucha', 3000.00, '2024-01-01');
+SELECT amount FROM inventory
+WHERE name = 'Karma sucha';
+
+INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
+(2, 'Karma sucha', 3500.00, '2024-01-01');
+SELECT amount FROM inventory
+WHERE name = 'Karma sucha';
+
+# Dodanie obiektu o błędnej dacie przeterminowania
+INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
+(2, 'Karma mokra', 2000.00, '2019-01-01');
