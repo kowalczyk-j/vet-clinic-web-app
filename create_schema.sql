@@ -168,6 +168,8 @@ CREATE TABLE inventory (
   FOREIGN KEY (unit_id) REFERENCES unit_of_measure(unit_id)
 );
 
+ALTER TABLE inventory ADD CONSTRAINT positive_amount_check CHECK (amount > 0);
+
 CREATE TABLE medical_equipment (
   equipment_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(50),
@@ -504,5 +506,14 @@ BEGIN
     END IF;
 END //
 
+
+CREATE TRIGGER check_inventory_date
+BEFORE INSERT ON inventory
+FOR EACH ROW
+    BEGIN
+        IF NEW.best_before < CURDATE() THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add object past the expiration date';
+        end if;
+    end //
 
 DELIMITER ;

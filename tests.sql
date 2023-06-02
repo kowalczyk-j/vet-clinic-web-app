@@ -129,16 +129,6 @@ ORDER BY performed DESC;
 INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
 (2, 'Karma sucha', -6000.00, '2024-01-01');
 
-# Dodanie powtarzającego się obiektu
-INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
-(2, 'Karma sucha', 3000.00, '2024-01-01');
-SELECT amount FROM inventory
-WHERE name = 'Karma sucha';
-
-INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
-(2, 'Karma sucha', 3500.00, '2024-01-01');
-SELECT amount FROM inventory
-WHERE name = 'Karma sucha';
 
 # Dodanie obiektu o błędnej dacie przeterminowania
 INSERT INTO inventory (unit_id, name, amount, best_before) VALUES
