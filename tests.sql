@@ -71,3 +71,53 @@ WHERE p.name = 'Recepcjonista'
 AND es.week_day = 'Pon'
 ORDER BY es.hour_start;
 
+# MODUŁ ZARZĄDZANIA PACJENTAMI
+
+# Dodanie nowego właściciela
+INSERT INTO owner (name, surname, address, phone_number, pesel)
+VALUES ('Jan', 'Kowalski', 'ul. Testowa 1', '111222333', '12345678901');
+
+# Dodanie nowego zwierzęcia
+INSERT INTO animal (owner_id, name, species, type, gender, birthdate)
+VALUES (LAST_INSERT_ID(), 'Burek', 'Pies', 'Owczarek Niemiecki', 'M', '2018-05-10');
+
+# Dodanie zwierzęcia z błędną datą urodzenia
+INSERT INTO animal (owner_id, name, species, type, gender, birthdate)
+VALUES (LAST_INSERT_ID(), 'Burek', 'Pies', 'Owczarek Niemiecki', 'M', '2024-02-01');
+
+# Dodanie właściciela z błędnym numerem telefonu
+INSERT INTO owner (name, surname, address, phone_number, pesel)
+VALUES ('Jan', 'Kowalski', 'ul. Testowa 1', 'telefon', '12345678901');
+
+# Dodanie zwierzęcia z błędnym włascicielem
+INSERT INTO animal (owner_id, name, species, type, gender, birthdate)
+VALUES (-10000, 'Burek', 'Pies', 'Owczarek Niemiecki', 'M', '2024-02-01');
+
+# Dodanie historii chorób dla danego pacjenta
+INSERT INTO disease_history (animal_id, disease_id, diagnosis_date, recovery_date, description)
+VALUES (1, 1, '2022-02-05', '2022-02-15', 'Pies miał problemy z oddychaniem.');
+
+# Zmiana danych właściciela
+UPDATE owner
+SET name = 'Adam', surname = 'Nowak', phone_number = '987654321', address = 'ul. Nowa 2', pesel = '12345678911'
+WHERE owner_id = 1;
+
+# Zmiana danych zwierzęcia
+UPDATE animal
+SET name = 'Azor', type = 'Labrador Retriever'
+WHERE animal_id = 1;
+
+# Generowanie raportu o najczęstszych chorobach:
+SELECT d.name AS disease, COUNT(*) AS occurrences
+FROM disease_history dh
+JOIN disease d ON dh.disease_id = d.disease_id
+GROUP BY d.name
+ORDER BY occurrences DESC;
+
+# Generowanie raportu o zabiegach
+
+SELECT p.name AS procedure, COUNT(*) AS performed
+FROM procedure_appointment pa
+JOIN procedure p ON pa.procedure_id = p.procedure_id
+GROUP BY procedure
+ORDER BY performed DESC;
