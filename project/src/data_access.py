@@ -1,4 +1,4 @@
-from models import (animal, appointment, disease, disease_history, employee,
+from src.models import (animal, appointment, disease, disease_history, employee,
                     employee_schedule, examination, medical_procedure, owner,
                     payment, procedure_appointment, vet, engine)
 from sqlalchemy import select, insert
@@ -11,6 +11,9 @@ def execute_statement(statement):
         session.commit()
     return result
 
+def get_all_owners():
+    stmt = select(owner)
+    return execute_statement(stmt)
 
 # ----------- OWNER -----------
 

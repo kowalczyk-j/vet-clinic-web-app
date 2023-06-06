@@ -23,7 +23,7 @@ tables = [
 ]
 
 engine = create_engine(
-    "mysql+pymysql://root:root_password@localhost:3307/bd2_23l_z31")
+    "mysql+pymysql://root:root_password@localhost:3306/bd2_23l_z31")
 
 metadata = MetaData()
 
