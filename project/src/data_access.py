@@ -1,8 +1,9 @@
-from src.models import (animal, appointment, disease, disease_history, employee,
+from models import (animal, appointment, disease, disease_history, employee,
                     employee_schedule, examination, medical_procedure, owner,
                     payment, procedure_appointment, vet, engine)
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, or_, and_
 from sqlalchemy.orm import Session
+from datetime import date, datetime
 
 
 def execute_statement(statement):
@@ -10,6 +11,7 @@ def execute_statement(statement):
         result = session.execute(statement)
         session.commit()
     return result
+
 
 def get_all_owners():
     stmt = select(owner)
@@ -124,6 +126,27 @@ def get_vets_appointments(vet_row):
 def get_appointment_by_id(id):
     stmt = select(appointment).where(appointment.c.appointment_id == id)
     return execute_statement(stmt).first()
+
+
+def get_all_appointments():
+    stmt = select(appointment)
+    return execute_statement(stmt).all()
+
+
+def get_all_future_appointments():
+    current_time = datetime.now().time()
+    stmt = (select(appointment).where(
+            or_(and_(appointment.c.time >= current_time, appointment.c.date == date.today()),
+                appointment.c.date > date.today())))
+    return execute_statement(stmt).all()
+
+
+def get_all_past_appointments():
+    current_time = datetime.now().time()
+    stmt = (select(appointment).where(
+            or_(and_(appointment.c.time < current_time, appointment.c.date == date.today()),
+                appointment.c.date < date.today())))
+    return execute_statement(stmt).all()
 
 
 def get_procedures_with_appointment(appointment_row):
