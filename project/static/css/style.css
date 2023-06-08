@@ -57,7 +57,7 @@ body {
 
   .container {
     
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
     overflow-x: auto;
     padding: 20px;
@@ -122,3 +122,18 @@ body {
     grid-column-start: 1;
     grid-column-end: 3;
   }
+
+  .flash-messages {
+    margin-top: 10px;
+}
+
+.flash-message {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.success {
+    background-color: #c9e2b3;
+    color: #397d02;
+}

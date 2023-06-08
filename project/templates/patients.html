@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Weterynaria</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <h1>Klinika weterynaryjna</h1>
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Właściciele zwierząt</h1>
     <table>
         <thead>
             <tr>
@@ -19,14 +15,14 @@
         </thead>
         <tbody>
             {% for owner in owners %}
-            <tr>
-                <td>{{ owner.owner_id }}</td>
-                <td>{{ owner.name }}</td>
-                <td>{{ owner.surname }}</td>
-                <td>{{ owner.address }}</td>
-                <td>{{ owner.phone_number }}</td>
-                <td>{{ owner.pesel }}</td>
-            </tr>
+                <tr>
+                    <td>{{ owner.owner_id }}</td>
+                    <td>{{ owner.name }}</td>
+                    <td>{{ owner.surname }}</td>
+                    <td>{{ owner.address }}</td>
+                    <td>{{ owner.phone_number }}</td>
+                    <td>{{ owner.pesel }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -47,5 +43,4 @@
             <button type="submit">Dodaj właściciela</button>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}
