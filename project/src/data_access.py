@@ -1,6 +1,6 @@
-from models import (animal, appointment, disease, disease_history, employee,
-                    employee_schedule, examination, medical_procedure, owner,
-                    payment, procedure_appointment, vet, engine)
+from src.models import (animal, appointment, disease, disease_history, employee,
+                        employee_schedule, examination, medical_procedure, owner,
+                        payment, procedure_appointment, vet, engine, room)
 from sqlalchemy import select, insert, or_, and_, func
 from sqlalchemy.orm import Session
 from datetime import date, datetime
@@ -16,6 +16,7 @@ def execute_statement(statement):
 def get_all_owners():
     stmt = select(owner)
     return execute_statement(stmt)
+
 
 # ----------- OWNER -----------
 
@@ -138,8 +139,9 @@ def get_all_appointments():
             .join(procedure_appointment)
             .group_by(procedure_appointment.c.appointment_id)
             .subquery())
-    stmt = select(appointment, subq.c.duration).join(subq)
+    stmt = select(appointment, subq.c.duration).join(subq).order_by(appointment.c.date,  appointment.c.time)
     return execute_statement(stmt).all()
+
 
 
 def get_all_future_appointments():
@@ -219,3 +221,10 @@ def get_employee_schedule(employee_row):
     stmt = (select(employee_schedule).join(employee).
             where(employee_schedule.c.employee_id == employee_row.employee_id))
     return execute_statement(stmt).all()
+
+
+# ----------- ROOMS -----------
+
+def get_room_by_id(id):
+    stmt = select(room).where(room.c.room_id == id)
+    return execute_statement(stmt).first()
