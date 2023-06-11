@@ -1,7 +1,57 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Treść strony Employees -->
-<h1>Strona Płatności</h1>
-<!-- Dodatkowe elementy na stronie Employees -->
+<h1>Pending Payments</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Date</th>
+            <th>Hour</th>
+            <th>Cost</th>
+            <th>Pesel</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for owner in owners %}
+            <tr>
+                <td>{{ owner.owner_id }}</td>
+                <td>{{ owner.name }}</td>
+                <td>{{ owner.surname }}</td>
+                <td>{{ owner.address }}</td>
+                <td>{{ owner.phone_number }}</td>
+                <td>{{ owner.pesel }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h1>Payment History</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Date</th>
+            <th>Hour</th>
+            <th>Cost</th>
+            <th>Pesel</th>
+            <th>Payment Method</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for owner in owners %}
+            <tr>
+                <td>{{ owner.owner_id }}</td>
+                <td>{{ owner.name }}</td>
+                <td>{{ owner.surname }}</td>
+                <td>{{ owner.address }}</td>
+                <td>{{ owner.phone_number }}</td>
+                <td>{{ owner.pesel }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
