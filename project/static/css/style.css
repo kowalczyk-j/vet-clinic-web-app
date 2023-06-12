@@ -156,11 +156,14 @@ body {
   padding: 12px 20px 12px 40px; /* Add some padding */
   border: 1px solid #ddd; /* Add a grey border */
   vertical-align: right;
-  margin-right: 10px;
+  margin: 10px;
 }
 
 .button-personalized {
   height: 50px;
+  width: 200px;
+  display: inline-block;
+  margin: 10px;
 }
 
 .add-user {
@@ -171,4 +174,8 @@ body {
 .trashy {
   width: 15px;
   height: 15px;
+}
+
+.button-row {
+  text-align: center;
 }

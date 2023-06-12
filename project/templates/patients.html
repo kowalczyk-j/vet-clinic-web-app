@@ -41,7 +41,7 @@
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
                                 <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#add-owner-form">Edytuj</button>
-                                <button class="btn btn-sm btn-outline-secondary badge" type="button"><img class='trashy' src="../static/css/trash.png"></button>
+                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#confirmation"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
                           </td>
                         <!-- <td><a class="nav-link" href="/patients/{{ owner.owner_id }}">view page</a></td> -->
@@ -97,11 +97,30 @@
                     <label for="pesel">Pesel:</label>
                     <input type="text" name="pesel" id="pesel" required placeholder="...">
                     <button class="btn btn-success btn-block" type="submit">Potwierdź</button>
-                </form>
+                    </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- confirmation window -->
+<div class="modal fade" role="dialog" tabindex="0" id="confirmation"> 
+    <div class="py-1">
+        <div class="modal-dialog modal-lg">
+            <div class = 'modal-content'>
+                <div class="modal-header">
+                    <h5>Czy na pewno chcesz usunąć tego właściciela?</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="col text-center">
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
+                        <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 </div>
 
 {% endblock %}
