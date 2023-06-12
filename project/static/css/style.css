@@ -140,9 +140,10 @@ body {
 
 
 
-/* Style specific to payments */
-.search_add_delete {
-  text-align: right;
+/* Styles specific to patients */
+.search-add /* ????? */ {
+  align-content: right;
+  align-items: right;
 }
 
 #searchInput {
@@ -150,14 +151,24 @@ body {
   background-size: 24px;
   background-position: 10px 12px; /* Position the search icon */
   background-repeat: no-repeat; /* Do not repeat the icon image */
-  width: 200px; /* Full-width */
+  height: 50px;
+  width: 30%; /* Full-width */
   padding: 12px 20px 12px 40px; /* Add some padding */
   border: 1px solid #ddd; /* Add a grey border */
-  vertical-align: middle;
+  vertical-align: right;
   margin-right: 10px;
+}
+
+.button-personalized {
+  height: 50px;
 }
 
 .add-user {
   text-align: right;
   vertical-align: middle;
+}
+
+.trashy {
+  width: 15px;
+  height: 15px;
 }
