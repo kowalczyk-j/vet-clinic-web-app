@@ -17,21 +17,77 @@ def home():
 @app.route('/calendar')
 def calendar():
     appointments = get_all_appointments()
+    
+
+    doctors_data = [{
+        'name': 'Magda'
+    }]
+
+    rooms_data = [{
+        'room': '123'
+    }, 
+    {
+        'room': 'abc'
+    }]
+
+    animal_data= [{
+        'type': 'sowa'
+    }, 
+    {
+        'type': 'kaczka'
+    }]
+
+    treatment_data = [{
+        'name': 'eutanazja'
+    }, 
+    {
+        'name': 'szczepienie'
+    }]
+
+
     table_data = []
 
     for appointment in appointments:
         animal_name, animal_species, owner_name, owner_surname, vet_name, vet_surname, room_number = get_appointment_details(
             appointment)
         appointment_data = {
+            'id': 'none',
             'date': appointment.date,
             'time': appointment.time,
             'doctor': f"{vet_name} {vet_surname}",
             'room': room_number,
-            'animal': f"{animal_species} {animal_name} (Właściciel: {owner_name} {owner_surname})"
+            'animal': f"{animal_species} {animal_name} (Właściciel: {owner_name} {owner_surname})",
+            'treatment' : "eutanazja"
         }
         table_data.append(appointment_data)
-    return render_template('calendar.html', appointments=table_data)
+    return render_template('calendar.html', 
+                           appointments=table_data, 
+                           doctors=doctors_data, 
+                           rooms=rooms_data,
+                           treatments=treatment_data,
+                           animals=animal_data)
 
+
+@app.route('/get-patient-info', methods=['POST'])
+def get_patient_info():
+    data = request.get_json()
+    pesel = data['pesel']
+    
+    if pesel == '123':
+        patient = {
+            'name': 'John Doe',
+            'age': 35,
+            'address': '123 Main Street'
+        }
+        
+        return jsonify({'patient': patient})
+    patient = {
+    'name': 'Tajemniczy bebzol',
+    'age': 35,
+    'address': '123 Main Street'
+    }
+    return jsonify({'patient': patient})
+    
 
 @app.route('/send-appointments')
 def send_appointments_data_to_calendar():
