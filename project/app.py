@@ -80,6 +80,9 @@ def schedule():
 
 @app.route('/payments')
 def payments():
+    # pending_payments = get_pending_payments()
+    # payments_history = get_payments_history()
+    # return render_template('payments.html', pending_payments=pending_payments, payments_history=payments_history)
     return render_template('payments.html')
 
 
