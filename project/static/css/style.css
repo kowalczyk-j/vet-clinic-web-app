@@ -146,7 +146,7 @@ body {
   align-items: right;
 }
 
-#searchInput {
+#pesel {
   background-image: url('search_icon.png'); /* Add a search icon to input */
   background-size: 24px;
   background-position: 10px 12px; /* Position the search icon */
