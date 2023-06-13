@@ -1,7 +1,7 @@
 from src.models import (animal, appointment, disease, disease_history, employee,
                         employee_schedule, examination, medical_procedure, owner,
-                        payment, payment_method, procedure_appointment, vet, engine, room)
-from sqlalchemy import select, insert, delete, or_, and_, func
+                        payment, procedure_appointment, vet, engine, room)
+from sqlalchemy import select, insert, or_, and_, func
 from sqlalchemy.orm import Session
 from datetime import date, datetime
 
@@ -13,12 +13,12 @@ def execute_statement(statement):
     return result
 
 
-# ----------- OWNER -----------
-
-
 def get_all_owners():
     stmt = select(owner)
     return execute_statement(stmt)
+
+
+# ----------- OWNER -----------
 
 
 def get_owner_by_id(id):
@@ -59,11 +59,6 @@ def add_owner(name, surname, address, phone_number, pesel):
     stmt = insert(owner).values(name=name, surname=surname,
                                 address=address, phone_number=phone_number,
                                 pesel=pesel)
-    execute_statement(stmt)
-
-
-def delete_owner(pesel):
-    stmt = delete(owner).where(owner.c.pesel == pesel)
     execute_statement(stmt)
 
 
@@ -144,9 +139,9 @@ def get_all_appointments():
             .join(procedure_appointment)
             .group_by(procedure_appointment.c.appointment_id)
             .subquery())
-    stmt = select(appointment, subq.c.duration).join(
-        subq).order_by(appointment.c.date,  appointment.c.time)
+    stmt = select(appointment, subq.c.duration).join(subq).order_by(appointment.c.date,  appointment.c.time)
     return execute_statement(stmt).all()
+
 
 
 def get_all_future_appointments():
@@ -233,34 +228,3 @@ def get_employee_schedule(employee_row):
 def get_room_by_id(id):
     stmt = select(room).where(room.c.room_id == id)
     return execute_statement(stmt).first()
-
-
-# ----------- PAYMENTS -----------
-
-
-def get_pending_payments():
-    stmt = (select(owner.c.name, owner.c.surname, owner.c.pesel,
-                   payment.c.appointment_id, payment.c.amount)
-            .join_from(payment, appointment,
-                       payment.c.appointment_id == appointment.c.appointment_id)
-            .join_from(appointment, animal,
-                       appointment.c.animal_id == animal.c.animal_id)
-            .join_from(animal, owner, owner.c.owner_id == animal.c.owner_id)
-            .where(payment.c.date_paid == None))
-    return execute_statement(stmt).all()
-
-
-def get_payments_history():
-    stmt = (select(owner.c.name, owner.c.surname, owner.c.pesel,
-                   payment.c.appointment_id, payment.c.date_paid,
-                   payment_method.c.name.label("method_of_payment"),
-                   payment.c.amount)
-            .join_from(payment, payment_method,
-                       payment.c.method_id == payment_method.c.method_id)
-            .join_from(payment, appointment,
-                       payment.c.appointment_id == appointment.c.appointment_id)
-            .join_from(appointment, animal,
-                       appointment.c.animal_id == animal.c.animal_id)
-            .join_from(animal, owner, owner.c.owner_id == animal.c.owner_id)
-            .where(payment.c.date_paid != None))
-    return execute_statement(stmt).all()

@@ -40,7 +40,7 @@ CREATE TABLE disease_history (
   recovery_date DATE,
   description VARCHAR(255),
   PRIMARY KEY (history_id),
-  FOREIGN KEY (animal_id) REFERENCES animal(animal_id) ON DELETE CASCADE,
+  FOREIGN KEY (animal_id) REFERENCES animal(animal_id),
   FOREIGN KEY (disease_id) REFERENCES disease(disease_id)
 );
 
@@ -103,7 +103,7 @@ CREATE TABLE appointment (
   PRIMARY KEY (appointment_id),
   FOREIGN KEY (vet_id) REFERENCES vet(vet_id),
   FOREIGN KEY (room_id) REFERENCES room(room_id),
-  FOREIGN KEY (animal_id) REFERENCES animal(animal_id) ON DELETE CASCADE
+  FOREIGN KEY (animal_id) REFERENCES animal(animal_id)
 );
 
 CREATE TABLE procedure_appointment (
@@ -147,7 +147,7 @@ CREATE TABLE examination (
   date DATE,
   result VARCHAR(255),
   PRIMARY KEY (examination_id),
-  FOREIGN KEY (animal_id) REFERENCES animal(animal_id) ON DELETE CASCADE,
+  FOREIGN KEY (animal_id) REFERENCES animal(animal_id),
   FOREIGN KEY (vet_id) REFERENCES vet(vet_id)
 );
 
