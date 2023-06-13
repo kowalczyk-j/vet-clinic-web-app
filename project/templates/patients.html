@@ -105,7 +105,7 @@
 </div>
 
 <!-- confirmation window -->
-<div class="modal fade" role="dialog" tabindex="0" id="confirmation"> 
+<div class="modal fade" role="dialog" tabindex="0" id="confirmation" action=""> 
     <div class="py-1">
         <div class="modal-dialog modal-lg">
             <div class = 'modal-content'>
@@ -113,10 +113,12 @@
                     <h5>Czy na pewno chcesz usunąć tego właściciela?</h5>
                 </div>
                 <div class="modal-body">
+                    <form class="form" novalidate="" action="/delete_owner" method="POST">
                     <div class="col text-center">
                         <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
                         <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
