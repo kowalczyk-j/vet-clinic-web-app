@@ -5,14 +5,14 @@
 <div class='container'>
     <h1>Właściciele</h1>
     <div class="row search-add">
-        <input type="text" id="searchInput" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
+        <input type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
         <div class="add-user">
             <button class="btn btn-success btn-block button-personalized" type="button" data-toggle="modal" data-target="#add-owner-form">Dodaj właściciela</button>
         </div>
     </div>
 
     <div class="row flex-lg-nowrap">
-        <table>
+        <table id="owners">
             <thead>
                 <tr>
                     <!-- <th> </th> -->
@@ -41,7 +41,7 @@
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
                                 <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#add-owner-form">Edytuj</button>
-                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#confirmation"><img class='trashy' src="../static/css/trash.png"></button>
+                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-pesel="{{ owner.pesel }}"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
                           </td>
                         <!-- <td><a class="nav-link" href="/patients/{{ owner.owner_id }}">view page</a></td> -->
@@ -113,7 +113,7 @@
                     <h5>Czy na pewno chcesz usunąć tego właściciela?</h5>
                 </div>
                 <div class="modal-body">
-                    <form class="form" novalidate="" action="/delete_owner" method="POST">
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_owner/{{ pesel }}">
                     <div class="col text-center">
                         <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
                         <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
@@ -124,5 +124,44 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+        
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const pesel = button.getAttribute('data-pesel');
+                const action = '/delete_owner/' + pesel;
+                deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
+
+<script>
+    function searchFunction() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("pesel");
+      filter = input.value.toString();
+      table = document.getElementById("owners");
+      tr = table.getElementsByTagName("tr");
+    
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[4];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toString().indexOf(filter) === 0) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
 
 {% endblock %}
