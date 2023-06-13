@@ -26,18 +26,18 @@
             </thead>
             <tbody>
                 {% for owner in owners %}
-                    <tr>
+                    <tr class='clickable-row' data-href="/patients/{{ owner.owner_id }}">
                         <!-- <td class="align-middle">
                             <div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top">
                               <input type="checkbox" class="custom-control-input" id="{{owner.owner_id}}">
                               <label class="custom-control-label" for="{{owner.owner_id}}"></label>
                             </div>
                         </td> -->
-                        <td>{{ owner.name }}</td>
-                        <td>{{ owner.surname }}</td>
-                        <td>{{ owner.address }}</td>
-                        <td>{{ owner.phone_number }}</td>
-                        <td>{{ owner.pesel }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.name }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.surname }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.address }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.phone_number }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.pesel }}</td>
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
                                 <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#add-owner-form">Edytuj</button>
@@ -162,6 +162,6 @@
         }
       }
     }
-    </script>
+</script>
 
 {% endblock %}

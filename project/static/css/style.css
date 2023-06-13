@@ -180,7 +180,11 @@ body {
   text-align: center;
 }
 
-/* nwm w sumie czy to pasuje: */
 #owners tr:hover {
   background-color: #f2f2f2;
+}
+
+.linked {
+  cursor: pointer;
+  cursor: hand;
 }
