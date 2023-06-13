@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class='container'>
 <h1>Oczekujące Płatności</h1>
 <table>
     <thead>
@@ -14,6 +15,15 @@
         </tr>
     </thead>
     <tbody>
+        <!-- przykładowe: -->
+        <tr>
+            <td>x</td>
+            <td>x</td>
+            <td>x</td>
+            <td>x</td>
+            <td>x</td>
+            <td><button class="btn btn-outline-secondary btn-block button-personalized" type="button" data-toggle="modal" data-target="#payment-form">Opłać</button></td>
+        </tr>
         {% for payment in pending_payments %}
             <tr>
                 <td>{{ payment.name }}</td>
@@ -21,12 +31,14 @@
                 <td>{{ payment.pesel }}</td>
                 <td>{{ payment.id_visit }}</td>
                 <td>{{ payment.cost }}</td>
-                <td> </td>
+                <td><button class="btn btn-outline-secondary btn-block button-personalized" type="button" data-toggle="modal" data-target="#payment-form">Opłać</button></td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
 
+<div class='container'>
 <h1>Historia Płatności</h1>
 <table>
     <thead>
@@ -56,4 +68,27 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
+
+<div class="modal fade" role="dialog" tabindex="1" id="payment-form"> 
+    <div class="py-1">
+        <div class="modal-dialog modal-lg">
+            <div class = 'modal-content'>
+                <div class="modal-header">
+                    <h5>Wybierz sposób zapłaty</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col text-center">
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Gotówka</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Karta Płatnicza</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Blik</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
