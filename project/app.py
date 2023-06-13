@@ -93,6 +93,14 @@ def patients():
     return render_template('patients.html', owners=owners)
 
 
+@app.route('/patients/<int:owner_id>')
+def profile(owner_id):
+    # owner = get_owner(owner_id)
+    # animals = get_owner_animals(owner_id)
+    # return render_template('profile.html', owner=owner, animals=animals)
+    return render_template('profile.html')
+
+
 @app.route('/add_owner', methods=['POST'])
 def add_owner_route():
     name = request.form['name']
