@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from src.data_access import get_owner_by_id, get_all_owners, add_owner, get_all_appointments, \
-    get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment
+from src.data_access import get_owner_by_id, get_all_owners, add_owner, delete_owner, \
+    get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
+    get_pending_payments, get_payments_history
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calendawr.db'
@@ -39,7 +40,8 @@ def send_appointments_data_to_calendar():
     calendar_data = []
 
     for appointment in appointments:
-        appointment_datetime = datetime.combine(appointment.date, appointment.time)
+        appointment_datetime = datetime.combine(
+            appointment.date, appointment.time)
         animal_name, animal_species, owner_name, owner_surname, vet_name, vet_surname, room_number = get_appointment_details(
             appointment)
         calendar_tile = {
@@ -80,10 +82,9 @@ def schedule():
 
 @app.route('/payments')
 def payments():
-    # pending_payments = get_pending_payments()
-    # payments_history = get_payments_history()
-    # return render_template('payments.html', pending_payments=pending_payments, payments_history=payments_history)
-    return render_template('payments.html')
+    pending_payments = get_pending_payments()
+    payment_history = get_payments_history()
+    return render_template('payments.html', pending_payments=pending_payments, payment_history=payment_history)
 
 
 @app.route('/patients')
@@ -96,10 +97,19 @@ def patients():
 def add_owner_route():
     name = request.form['name']
     surname = request.form['surname']
-    address = request.form['address']
+    street = request.form['street']
+    postal_code = request.form['postal code']
+    city = request.form['city']
+    address = f"ul. {street}, {postal_code} {city}"
     phone_number = request.form['phone_number']
     pesel = request.form['pesel']
     add_owner(name, surname, address, phone_number, pesel)
+    return redirect('/patients')
+
+
+@app.route('/delete_owner/<pesel>', methods=['POST'])
+def delete_owner_route(pesel):
+    delete_owner(pesel)
     return redirect('/patients')
 
 
