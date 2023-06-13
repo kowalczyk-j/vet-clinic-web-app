@@ -15,22 +15,13 @@
         </tr>
     </thead>
     <tbody>
-        <!-- przykładowe: -->
-        <tr>
-            <td>x</td>
-            <td>x</td>
-            <td>x</td>
-            <td>x</td>
-            <td>x</td>
-            <td><button class="btn btn-outline-secondary btn-block button-personalized" type="button" data-toggle="modal" data-target="#payment-form">Opłać</button></td>
-        </tr>
         {% for payment in pending_payments %}
             <tr>
                 <td>{{ payment.name }}</td>
                 <td>{{ payment.surname }}</td>
                 <td>{{ payment.pesel }}</td>
-                <td>{{ payment.id_visit }}</td>
-                <td>{{ payment.cost }}</td>
+                <td>{{ payment.appointment_id }}</td>
+                <td>{{ payment.amount }}</td>
                 <td><button class="btn btn-outline-secondary btn-block button-personalized" type="button" data-toggle="modal" data-target="#payment-form">Opłać</button></td>
             </tr>
         {% endfor %}
@@ -48,7 +39,6 @@
             <th>Pesel</th>
             <th>ID_wizyty</th>
             <th>Data</th>
-            <th>Godzina</th>
             <th>Sposób zapłaty</th>
             <th>Koszt</th>
         </tr>
@@ -59,11 +49,10 @@
                 <td>{{ payment.name }}</td>
                 <td>{{ payment.surname }}</td>
                 <td>{{ payment.pesel }}</td>
-                <td>{{ payment.id_visit }}</td>
-                <td>{{ payment.date }}</td>
-                <td>{{ payment.hour }}</td>
+                <td>{{ payment.appointment_id }}</td>
+                <td>{{ payment.date_paid }}</td>
                 <td>{{ payment.method_of_payment }}</td>
-                <td>{{ payment.cost }}</td>
+                <td>{{ payment.amount }}</td>
             </tr>
         {% endfor %}
     </tbody>

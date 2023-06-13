@@ -5,14 +5,14 @@
 <div class='container'>
     <h1>Właściciele</h1>
     <div class="row search-add">
-        <input type="text" id="searchInput" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
+        <input type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
         <div class="add-user">
             <button class="btn btn-success btn-block button-personalized" type="button" data-toggle="modal" data-target="#add-owner-form">Dodaj właściciela</button>
         </div>
     </div>
 
     <div class="row flex-lg-nowrap">
-        <table id="table-hover">
+        <table id="owners">
             <thead>
                 <tr>
                     <!-- <th> </th> -->
@@ -41,7 +41,7 @@
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
                                 <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#add-owner-form">Edytuj</button>
-                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#confirmation"><img class='trashy' src="../static/css/trash.png"></button>
+                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-pesel="{{ owner.pesel }}"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
                           </td>
                         <!-- <td><a class="nav-link" href="/patients/{{ owner.owner_id }}">view page</a></td> -->
@@ -113,7 +113,7 @@
                     <h5>Czy na pewno chcesz usunąć tego właściciela?</h5>
                 </div>
                 <div class="modal-body">
-                    <form class="form" novalidate="" action="/delete_owner" method="POST">
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_owner/{{ pesel }}">
                     <div class="col text-center">
                         <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
                         <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
@@ -124,7 +124,5 @@
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}
