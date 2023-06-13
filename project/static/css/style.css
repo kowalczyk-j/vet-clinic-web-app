@@ -179,3 +179,8 @@ body {
 .button-row {
   text-align: center;
 }
+
+/* nwm w sumie czy to pasuje: */
+#table-hover tr:hover {
+  background-color: #f2f2f2;
+}
