@@ -2,10 +2,14 @@
 
 {% block content %}
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/pl.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
+            allDaySlot: false,
+            locale: 'pl',
             initialView: 'timeGridWeek',
             headerToolbar: {
                 left: 'prev,next',
@@ -14,80 +18,213 @@
             },
             contentHeight: 'auto',
             events: '/send-appointments',
-            eventTimeFormat: {
-                hour: '2-digit',
-                minute: '2-digit',
-                meridiem: false
-            },
+            timeFormat: 'H(:mm)',
         });
-
+        
         calendar.render();
     });
 </script>
 
+
+<!-- Sekcja dla wiadomości flash-->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="{{ category }}-flash">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+
 <div class="container">
     <div id='calendar'></div>
-    <h1>Vet Appointments</h1>
-
-    <div class="button-menu-container">
-        <button id="add-appointment-toggle" onclick="toggleAddAppointmentForm()">➕</button>
-        <button id="add-lookup-toggle" onclick="toggleLookupAppointment()">🔎</button>
-    </div>
-
-    <form id="add-appointment-form" class="add-appointment-form" action="{{ url_for('add_appointment_route') }}" method="POST">
-        <input type="date" name="date" required>
-        <input type="time" name="time" required>
-        <input type="text" name="doctor" placeholder="doctor" required>
-        <input type="text" name="room" placeholder="room" required>
-        <input type="text" name="animal" placeholder="animal" required>
-        <input type="submit" value="Add Appointment">
-    </form>
+    <h1>Zarządzaj wizytami</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Room</th>
-                <th>Doctor</th>
-                <th>Animal's name</th>
+                <th>Id</th>
+                <th>Data</th>
+                <th>Godzina</th>
+                <th>Pokój</th>
+                <th>Lekarz</th>
+                <th>Zwierzę</th>
+                <th>Zabieg</th>
             </tr>
         </thead>
         <tbody>
             {% for appointment in appointments %}
             <tr>
+                <td>{{ appointment.id }}</td>
                 <td>{{ appointment.date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ appointment.time.strftime('%H:%M') }}</td>
                 <td>{{ appointment.room }}</td>
                 <td>{{ appointment.doctor }}</td>
                 <td>{{ appointment.animal }}</td>
+                <td>{{ appointment.procedures }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="flash-messages">
-        {% for message in messages %}
-        <div class="flash-message">{{ message }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endwith %}
+</div>
+<div class="button-menu-container">
+    <button id="add-appointment-toggle" onclick="toggleAddAppointment()">➕ Dodaj wizytę</button>
+    <button id="add-lookup-toggle" onclick="toggleLookupAppointment()">🔎 Wyszukaj wizytę</button>
+    <button id="add-remove-toggle" onclick="toggleRemoveAppointment()">❌ Usuń wizytę</button>
 </div>
 
-<script>
-    function toggleAddAppointmentForm() {
-        var form = document.getElementById("add-appointment-form");
-        form.classList.toggle("show");
-    }
-</script>
+
+<form id="add-appointment-form" class="add-appointment-form" action="{{ url_for('add_appointment_route') }}" method="POST">
+    <input type="date" name="date" required>
+    <input type="time" name="time" required>
+
+    <select name="doctor" required class="custom-dropdown">
+        <option value="" selected disabled hidden>Wybierz lekarza</option>
+        {% for doctor in doctors %}
+            <option value="{{ doctor['vet_id'] }}">{{doctor['name'] + ' ' + doctor['surname'] + ' (' + doctor['spec'] + ')' }}</option>
+        {% endfor %}
+    </select>
+
+
+    <select name="room" required class="custom-dropdown">
+        <option value="" selected disabled hidden>Wybierz pokój</option>
+        {% for room in rooms %}
+            <option value="{{ room['room_id'] }}">{{ room['room_number'] + ' (' + room['type'] + ')' }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="animal" required class="custom-dropdown">
+        <option value="" selected disabled hidden>Wybierz zwierzę</option>
+        {% for animal in animals %}
+            <option value="{{ animal['animal_id'] }}">{{ animal['species'] + ' ' + animal['name'] + ' (' + animal['owner_name'] + ' ' + animal['owner_surname'] + ')' }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="procedure" required class="custom-dropdown">
+        <option value="" selected disabled hidden>Wybierz zabieg</option>
+        {% for procedure in procedures %}
+            <option value="{{ procedure['procedure_id'] }}">{{ procedure['name'] }}</option>
+        {% endfor %}
+    </select>
+    
+    <input type="submit" value="Dodaj wizytę ">
+</form>
+
+
+<form id="lookup-appointment-form" class="add-appointment-form"  method="POST">
+    <input type="text" name="pesel" id="pesel-input" placeholder="Wpisz numer pesel pacjenta" required>  
+    <input type="submit" value="Wyszukaj">
+</form>
+
+<div id="patient-info" class="patient-info" style="display: none;">
+    <h2>Dane pacjenta</h2>
+    <p id="patient-name"></p>
+    <p id="patient-age"></p>
+    <p id="patient-address"></p>
+</div>
+
+<form id="remove-appointment-form" class="add-appointment-form" action="{{ url_for('remove_appointment') }}" method="POST">
+    <input type="text" name="id" placeholder="Podaj ID wizyty" required>
+    <input type="submit" value="Usuń">
+</form>
+
 
 <script>
-    function toggleLookupAppointment() {
-        var form = document.getElementById("add-appointment-form");
-        form.classList.toggle("show");
+var lookupAppointmentForm = document.getElementById("lookup-appointment-form");
+var patientInfo = document.getElementById("patient-info");
+var patientName = document.getElementById("patient-name");
+var patientAge = document.getElementById("patient-age");
+var patientAddress = document.getElementById("patient-address");
+var buttonMenuContainer = document.querySelector(".button-menu-container");
+
+lookupAppointmentForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    var peselInput = document.getElementById("pesel-input");
+    var pesel = peselInput.value;
+
+    fetch("/get-patient-info", {
+        method: "POST",
+        body: JSON.stringify({ pesel: pesel }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.patient) {
+            patientName.textContent = "Imię: " + data.patient.name;
+            patientAge.textContent = "Wiek: " + data.patient.age;
+            patientAddress.textContent = "Adres: " + data.patient.address;
+            patientInfo.style.display = "block";
+        } else {
+            patientInfo.style.display = "none";
+            alert("Pacjent o podanym numerze PESEL nie istnieje.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        patientInfo.style.display = "none";
+        alert("Wystąpił błąd podczas pobierania danych pacjenta.");
+    });
+});
+
+var addAppointmentForm = document.getElementById("add-appointment-form");
+var removeAppointmentForm = document.getElementById("remove-appointment-form");
+
+removeAppointmentForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    var appointmentIdInput = document.querySelector("#remove-appointment-form input[name='id']");
+    var appointmentId = appointmentIdInput.value;
+
+    fetch("/remove-appointment", {
+        method: "POST",
+        body: JSON.stringify({ id: appointmentId }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+    if (!response.ok) {
+        throw new Error("Wystąpił błąd podczas usuwania wizyty. Sprawdź, czy wizyta o podanym ID istnieje.");
     }
+    return response.text();
+    })
+    .then(data => {
+        alert(data); // Wyświetl komunikat potwierdzający usunięcie wizyty
+        location.reload(); // Odświeżanie listy wizyt
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert(error.message);
+    });
+});
+
+function toggleRemoveAppointment() {
+    lookupAppointmentForm.classList.remove("show");
+    addAppointmentForm.classList.remove("show");
+    removeAppointmentForm.classList.toggle("show");
+    patientInfo.style.display = "none";
+}
+
+function toggleAddAppointment() {
+    lookupAppointmentForm.classList.remove("show");
+    removeAppointmentForm.classList.remove("show");
+    addAppointmentForm.classList.toggle("show");
+    patientInfo.style.display = "none";
+}
+
+function toggleLookupAppointment() {
+    addAppointmentForm.classList.remove("show");
+    removeAppointmentForm.classList.remove("show");
+    lookupAppointmentForm.classList.toggle("show");
+    patientInfo.style.display = "none";
+}
+
+// Add click event listeners to all buttons in the menu
+var menuButtons = buttonMenuContainer.querySelectorAll("button");
+menuButtons.forEach(function(button) {
+    button.addEventListener("click", function() {
+        patientInfo.style.display = "none";
+    });
+});
 </script>
+
+
 {% endblock %}
