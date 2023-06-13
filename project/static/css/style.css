@@ -122,3 +122,16 @@ body {
     color: #333;
 }
 
+.success-flash {
+  background-color: #c1e6c1;
+  color: #006400;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.error-flash {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin-bottom: 10px;
+}
