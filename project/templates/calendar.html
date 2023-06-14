@@ -177,9 +177,14 @@
               <div class="modal-body">
                 <form class="form" id="edit-form" action="/edit_appointment" method="POST">
                   <div class="form-group">
+                    <label for="new-day">Nowy dzień wizyty:</label>
+                    <input type="date" name="new-day" id="name" required placeholder="...">
+                  </div>                    
+                  <div class="form-group">
                       <label for="start-hour">Nowa godzina rozpoczęcia wizyty:</label>
                       <input type="time" name="start-hour" id="name" required placeholder="...">
                   </div>
+
                   <button class="btn btn-success btn-block" type="submit" id="submit-edit">Przełóż</button>
                 </form>
               </div>
