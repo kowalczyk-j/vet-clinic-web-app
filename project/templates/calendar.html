@@ -64,7 +64,7 @@
         </div>
     
         <div class="row flex-lg-nowrap">
-            <table id="owners">
+            <table id="appointments">
                 <thead>
                     <tr>
                         <!-- <th> </th> -->
@@ -229,6 +229,31 @@
         });
     });
 </script>
+
+<script>
+    function searchFunction() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("pesel");
+      filter = input.value.toString().toLowerCase(); // Convert filter value to lowercase for case-insensitive search
+      table = document.getElementById("appointments");
+      tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows, and hide those that don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[5]; // Use index 5 for the "animal" column
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toString().toLowerCase().includes(filter)) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+</script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
