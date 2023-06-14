@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from src.data_access import get_owner_by_id, get_all_owners, add_owner, delete_owner, \
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
-    get_pending_payments, get_payments_history
+    get_pending_payments, get_payments_history, get_owners_animals
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calendawr.db'
@@ -95,10 +95,9 @@ def patients():
 
 @app.route('/patients/<int:owner_id>')
 def profile(owner_id):
-    # owner = get_owner(owner_id)
-    # animals = get_owner_animals(owner_id)
-    # return render_template('profile.html', owner=owner, animals=animals)
-    return render_template('profile.html')
+    owner = get_owner_by_id(owner_id)
+    animals = get_owners_animals(owner)
+    return render_template('profile.html', owner=owner, animals=animals)
 
 
 @app.route('/add_owner', methods=['POST'])

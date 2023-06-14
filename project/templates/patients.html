@@ -5,7 +5,7 @@
 <div class='container'>
     <h1>Właściciele</h1>
     <div class="row search-add">
-        <input type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
+        <input class="pesel-searchbar" type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
         <div class="add-user">
             <button class="btn btn-success btn-block button-personalized" type="button" data-toggle="modal" data-target="#add-owner-form">Dodaj właściciela</button>
         </div>
@@ -15,7 +15,6 @@
         <table id="owners">
             <thead>
                 <tr>
-                    <!-- <th> </th> -->
                     <th>Imię</th>
                     <th>Nazwisko</th>
                     <th>Adres</th>
@@ -26,7 +25,7 @@
             </thead>
             <tbody>
                 {% for owner in owners %}
-                    <tr class='clickable-row' data-href="/patients/{{ owner.owner_id }}">
+                    <tr>
                         <!-- <td class="align-middle">
                             <div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top">
                               <input type="checkbox" class="custom-control-input" id="{{owner.owner_id}}">
@@ -40,11 +39,10 @@
                         <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.pesel }}</td>
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
-                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#add-owner-form">Edytuj</button>
+                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#edit-owner-form">Edytuj</button>
                                 <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-pesel="{{ owner.pesel }}"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
                           </td>
-                        <!-- <td><a class="nav-link" href="/patients/{{ owner.owner_id }}">view page</a></td> -->
                     </tr>
                 {% endfor %}
             </tbody>
@@ -95,13 +93,51 @@
                     <label for="phone_number">Numer Telefonu:</label>
                     <input type="text" name="phone_number" id="phone_number" required placeholder="...">
                     <label for="pesel">Pesel:</label>
-                    <input type="text" name="pesel" id="pesel" required placeholder="...">
-                    <button class="btn btn-success btn-block" onclick="editRow();" type="submit">Potwierdź</button>
+                    <input type="text" name="pesel" id="number_pesel" required placeholder="...">
+                    <button class="btn btn-success btn-block" type="submit">Potwierdź</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+
+<!-- edit owner form -->
+<div class="modal fade" role="dialog" tabindex="-1" id="edit-owner-form"> 
+    <div class="py-1">       
+      <div class="modal-dialog modal-lg" role="document">
+          <div class = 'modal-content'>
+              <div class="modal-header">
+                  <h5>Edytuj właściciela</h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                      <span aria-hidden="true">×</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+              <form class="form" novalidate="" action="/add_owner" method="POST">
+                  <div class="form-group">
+                      <label for="name">Imię:</label>
+                      <input type="text" name="name" id="name" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                      <label for="surname">Nazwisko:</label>
+                      <input type="text" name="surname" id="surname" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                    <label for="surname">Adres:</label>
+                    <input type="text" name="address" id="address" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                    <label for="phone_number">Numer Telefonu:</label>
+                    <input type="text" name="phone_number" id="phone_number" required placeholder="...">
+                  </div>
+                  <button class="btn btn-success btn-block" onclick="editRow();" type="submit">Potwierdź</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
 
 <!-- confirmation window -->
