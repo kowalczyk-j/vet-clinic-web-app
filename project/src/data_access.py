@@ -124,7 +124,9 @@ def get_vet_by_id(id):
     stmt = select(vet).where(vet.c.vet_id == id)
     return execute_statement(stmt).first()
 
-
+def get_all_vets():
+    stmt = select(vet)
+    return execute_statement(stmt).all()
 def get_vets_appointments(vet_row):
     stmt = (select(appointment).join(vet)
             .where(appointment.c.vet_id == vet_row.vet_id))
@@ -138,6 +140,9 @@ def get_appointment_by_id(id):
     stmt = select(appointment).where(appointment.c.appointment_id == id)
     return execute_statement(stmt).first()
 
+def get_latest_appointment():
+    stmt = select(appointment).order_by(appointment.c.appointment_id.desc()).limit(1)
+    return execute_statement(stmt).first()
 
 def get_all_appointments():
     subq = (select(procedure_appointment.c.appointment_id,
@@ -149,26 +154,26 @@ def get_all_appointments():
             .join(procedure_appointment)
             .group_by(procedure_appointment.c.appointment_id)
             .subquery())
-    stmt = select(appointment, subq.c.duration).join(
-        subq).order_by(appointment.c.date,  appointment.c.time)
+
+    stmt = select(appointment, subq.c.duration).join(subq).order_by(appointment.c.date, appointment.c.time)
     return execute_statement(stmt).all()
 
 
 def get_all_future_appointments():
     current_time = datetime.now().time()
     subq = subq = (select(procedure_appointment.c.appointment_id,
-                   func.sec_to_time(
-                       func.sum(
-                           func.time_to_sec(
-                               medical_procedure.c.estimate_time)))
-                   .label("duration"))
+                          func.sec_to_time(
+                              func.sum(
+                                  func.time_to_sec(
+                                      medical_procedure.c.estimate_time)))
+                          .label("duration"))
                    .join(procedure_appointment)
                    .group_by(procedure_appointment.c.appointment_id)
                    .subquery())
     stmt = (select(appointment, subq.c.duration).where(
-            or_(and_(appointment.c.time >= current_time,
-                     appointment.c.date == date.today()),
-                appointment.c.date > date.today())).join(subq))
+        or_(and_(appointment.c.time >= current_time,
+                 appointment.c.date == date.today()),
+            appointment.c.date > date.today())).join(subq))
     return execute_statement(stmt).all()
 
 
@@ -184,9 +189,9 @@ def get_all_past_appointments():
             .group_by(procedure_appointment.c.appointment_id)
             .subquery())
     stmt = (select(appointment, subq.c.duration).where(
-            or_(and_(appointment.c.time < current_time,
-                     appointment.c.date == date.today()),
-                appointment.c.date < date.today())).join(subq))
+        or_(and_(appointment.c.time < current_time,
+                 appointment.c.date == date.today()),
+            appointment.c.date < date.today())).join(subq))
     return execute_statement(stmt).all()
 
 
@@ -213,6 +218,11 @@ def add_appointment(vet_id, room_id, animal_id, date, time):
     execute_statement(stmt)
 
 
+def delete_appointment(appointment_id):
+    stmt = delete(appointment).where(appointment.c.appointment_id == appointment_id)
+    execute_statement(stmt)
+
+
 def add_procedure_to_appointment(appointment_id, procedure_id):
     stmt = insert(procedure_appointment).values(
         appointment_id=appointment_id, procedure_id=procedure_id)
@@ -234,6 +244,11 @@ def get_employee_schedule(employee_row):
 
 
 # ----------- ROOMS -----------
+
+def get_all_rooms():
+    stmt = select(room)
+    return execute_statement(stmt).all()
+
 
 def get_room_by_id(id):
     stmt = select(room).where(room.c.room_id == id)
@@ -277,3 +292,9 @@ def update_payment(payment_id, method_id):
             .values({payment.c.method_id: method_id,
                      payment.c.date_paid: datetime.now()}))
     return execute_statement(stmt)
+
+
+# ----------- PROCEDURES -----------
+def get_all_procedures():
+    stmt = select(medical_procedure)
+    return execute_statement(stmt).all()
