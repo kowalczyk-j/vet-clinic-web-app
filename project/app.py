@@ -139,11 +139,19 @@ def add_appointment_route():
     doctor_id = request.form.get('doctor')
     room_id = request.form.get('room')
     animal_id = request.form.get('animal')
-    procedure_id = request.form.get('procedure')
-
+    selected_procedures = request.form.getlist('treatments')
+    procedure_ids = [int(procedure_id) for procedure_id in selected_procedures]
+    if not procedure_ids:
+        flash('Wystąpił błąd. Nie wybrano żadnego zabiegu.', 'error')
+        return redirect('/calendar')
+    if not date or not time or not doctor_id or not room_id or not animal_id:
+        flash('Wystąpił błąd. Nie wypełniono wszystkich pól.', 'error')
+        return redirect('/calendar')
     try:
         add_appointment(doctor_id, room_id, animal_id, date, time)
-        add_procedure_to_appointment(get_latest_appointment().appointment_id, procedure_id)
+        for procedure_id in procedure_ids:
+            print(procedure_id)
+            add_procedure_to_appointment(get_latest_appointment().appointment_id, procedure_id)
         flash('Wizyta została dodana pomyślnie.', 'success')
     except OperationalError as e:
         error_message = str(e)
@@ -157,11 +165,11 @@ def add_appointment_route():
 @app.route('/delete_appointment/<appointment_id>', methods=['POST'])
 def delete_appointment_route(appointment_id):
     try:
-        if get_latest_appointment().appointment_id < int(appointment_id):
-            raise ValueError
         delete_appointment(appointment_id)
         flash(f'Wizyta o id {appointment_id} została usunięta pomyślnie.', 'success')
-    except ValueError as e:
+    except IntegrityError:
+        flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
+    except OperationalError:
         flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
     return redirect('/calendar')
 
