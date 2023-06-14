@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
+from flask import Flask, render_template, request, jsonify, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-from src.data_access import get_owner_by_id, get_all_owners, add_owner, delete_owner, \
+from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_owner, delete_owner, \
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
     get_pending_payments, get_payments_history, update_payment, get_owners_animals
 
@@ -127,6 +127,23 @@ def add_owner_route():
         except IntegrityError:
             flash("Wystąpił błąd. Podany numer pesel jest już zarejestrowany \
                    w bazie danych.", "error")
+    return redirect('/patients')
+
+
+@app.route('/edit_owner/<pesel>', methods=['POST'])
+def edit_owner_route(pesel):
+    form_dict = {
+        'name': request.form['name'],
+        'surname': request.form['surname'],
+        'address': request.form['address'],
+        'phone_number': request.form['phone_number']
+    }
+    args_dict = {key: value for key, value in form_dict.items() if value}
+    if not args_dict:
+        flash("Wystąpił błąd. Nie podano danych do edycji.", "error")
+    else:
+        update_owner(pesel, **args_dict)
+        flash("Dane właściciela zostały zmienione.")
     return redirect('/patients')
 
 

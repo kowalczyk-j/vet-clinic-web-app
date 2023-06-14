@@ -62,6 +62,11 @@ def add_owner(name, surname, address, phone_number, pesel):
     execute_statement(stmt)
 
 
+def update_owner(pesel, **kwargs):
+    stmt = update(owner).where(owner.c.pesel == pesel).values(kwargs)
+    execute_statement(stmt)
+
+
 def delete_owner(pesel):
     stmt = delete(owner).where(owner.c.pesel == pesel)
     execute_statement(stmt)
