@@ -296,5 +296,5 @@ def update_payment(payment_id, method_id):
 
 # ----------- PROCEDURES -----------
 def get_all_procedures():
-    stmt = select(medical_procedure)
+    stmt = select(medical_procedure).order_by(medical_procedure.c.name)
     return execute_statement(stmt).all()

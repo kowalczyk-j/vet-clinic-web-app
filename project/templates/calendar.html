@@ -57,14 +57,14 @@
     <div class='container'>
         <h1>Zarządzaj wizytami</h1>
         <div class="row search-add">
-            <input type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wyszukaj wizytę za pomocą numeru PESEL klineta">
+            <input type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wpisz imię właściciela lub nazwę zwierzęcia...">
             <div class="add-user">
                 <button class="btn btn-success btn-block button-personalized" type="button" data-toggle="modal" data-target="#add-appointment-form">Dodaj wizytę</button>
             </div>
         </div>
     
         <div class="row flex-lg-nowrap">
-            <table id="owners">
+            <table id="appointments">
                 <thead>
                     <tr>
                         <!-- <th> </th> -->
@@ -81,13 +81,13 @@
                 <tbody>
                     {% for appointment in appointments %}
                         <tr class='clickable-row' data-href="/patients/{{ appointment.id}}">
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.id }}</td>
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.date.strftime('%Y-%m-%d') }}</td>
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.time.strftime('%H:%M') }}</td>
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.room }}</td>
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.doctor }}</td>
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.animal }}</td>
-                            <td class="linked" onclick="window.location='/patients/{{ appointment.id }}'">{{ appointment.procedures }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.id }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.date.strftime('%Y-%m-%d') }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.time.strftime('%H:%M') }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.room }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.doctor }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.animal }}</td>
+                            <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.procedures }}</td>
                             <td class="text-center align-middle">
                                 <div class="btn-group align-top">
                                     <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#change-time-form" data-id="{{ appointment.id }}">Przełóż</button>
@@ -147,13 +147,18 @@
                         </div>
                         <div class="form-group">
                             <label for="treatments">Wybierz zabiegi:</label>
-                              {% for procedure in procedures %}
-                                <div class="checkbox">
-                                  <input type="checkbox" id="procedure{{ procedure['procedure_id'] }}" name="treatments" value="{{ procedure['procedure_id']}}">{{ procedure['name'] }}
-                                </div>
-                              {% endfor %}
+                            <div class="row">
+                                {% for procedure in procedures %}
+                                    <div class="col-4">
+                                        <div class="checkbox">
+                                            <input type="checkbox" id="procedure{{ procedure['procedure_id'] }}" name="treatments" value="{{ procedure['procedure_id']}}">
+                                            {{ procedure['name'] }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                          </div>
+                        </div>
+
                           
                         <button class="btn btn-success btn-block" onclick="editRow();" type="submit">Potwierdź</button>
                         </form>
@@ -203,7 +208,7 @@
                     <h5>Czy na pewno chcesz usunąć wizytę?</h5>
                 </div>
                 <div class="modal-body">
-                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_appointment/{{ pesel }}">
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_appointment/{{ appointment_id }}">
                     <div class="col text-center">
                         <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
                         <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
@@ -214,6 +219,46 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const appointment_id = button.getAttribute('data-id');
+                const action = '/delete_appointment/' + appointment_id;
+                deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
+
+<script>
+    function searchFunction() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("pesel");
+      filter = input.value.toString().toLowerCase(); // Convert filter value to lowercase for case-insensitive search
+      table = document.getElementById("appointments");
+      tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows, and hide those that don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[5]; // Use index 5 for the "animal" column
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toString().toLowerCase().includes(filter)) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+</script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
