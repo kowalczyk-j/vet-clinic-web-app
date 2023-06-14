@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from src.data_access import get_owner_by_id, get_all_owners, add_owner, delete_owner, \
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
-    get_pending_payments, get_payments_history, get_owners_animals
+    get_pending_payments, get_payments_history, update_payment, get_owners_animals
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calendawr.db'
@@ -87,6 +88,12 @@ def payments():
     return render_template('payments.html', pending_payments=pending_payments, payment_history=payment_history)
 
 
+@app.route('/process_payment/<payment_id>/<method_id>', methods=['POST'])
+def process_payment(payment_id, method_id):
+    update_payment(payment_id, method_id)
+    return redirect("/payments")
+
+
 @app.route('/patients')
 def patients():
     owners = get_all_owners()
@@ -110,7 +117,16 @@ def add_owner_route():
     address = f"ul. {street}, {postal_code} {city}"
     phone_number = request.form['phone_number']
     pesel = request.form['pesel']
-    add_owner(name, surname, address, phone_number, pesel)
+    if (not name or not surname or not street or not postal_code
+            or not city or not phone_number or not pesel):
+        flash('Wystąpił błąd. Proszę wypełnić wszystkie pola.', 'error')
+    else:
+        try:
+            add_owner(name, surname, address, phone_number, pesel)
+            flash("Poprawnie zarejestrowano klienta!", "success")
+        except IntegrityError:
+            flash("Wystąpił błąd. Podany numer pesel jest już zarejestrowany \
+                   w bazie danych.", "error")
     return redirect('/patients')
 
 

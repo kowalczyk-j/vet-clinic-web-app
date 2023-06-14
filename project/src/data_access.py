@@ -1,7 +1,7 @@
 from src.models import (animal, appointment, disease, disease_history, employee,
                         employee_schedule, examination, medical_procedure, owner,
                         payment, payment_method, procedure_appointment, vet, engine, room)
-from sqlalchemy import select, insert, delete, or_, and_, func
+from sqlalchemy import select, insert, delete, update, or_, and_, func
 from sqlalchemy.orm import Session
 from datetime import date, datetime
 
@@ -240,7 +240,7 @@ def get_room_by_id(id):
 
 def get_pending_payments():
     stmt = (select(owner.c.name, owner.c.surname, owner.c.pesel,
-                   payment.c.appointment_id, payment.c.amount)
+                   payment.c.appointment_id, payment.c.amount, payment.c.payment_id)
             .join_from(payment, appointment,
                        payment.c.appointment_id == appointment.c.appointment_id)
             .join_from(appointment, animal,
@@ -264,3 +264,11 @@ def get_payments_history():
             .join_from(animal, owner, owner.c.owner_id == animal.c.owner_id)
             .where(payment.c.date_paid != None))
     return execute_statement(stmt).all()
+
+
+def update_payment(payment_id, method_id):
+    stmt = (update(payment)
+            .where(payment.c.payment_id == payment_id)
+            .values({payment.c.method_id: method_id,
+                     payment.c.date_paid: datetime.now()}))
+    return execute_statement(stmt)

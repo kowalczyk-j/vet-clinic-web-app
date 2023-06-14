@@ -22,7 +22,7 @@
                 <td>{{ payment.pesel }}</td>
                 <td>{{ payment.appointment_id }}</td>
                 <td>{{ payment.amount }}</td>
-                <td><button class="btn btn-outline-secondary btn-block button-personalized" type="button" data-toggle="modal" data-target="#payment-form">Opłać</button></td>
+                <td><button class="btn btn-outline-secondary btn-block button-personalized pay-btn" type="button" data-toggle="modal" data-target="#payment-form" data-id="{{ payment.payment_id }}">Opłać</button></td>
             </tr>
         {% endfor %}
     </tbody>
@@ -74,15 +74,64 @@
                         <input type="checkbox" class="custom-control-input" id="checkbox-1">
                         <label class="custom-control-label" for="checkbox-1">wygeneruj fakturę</label>
                     </div>
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/process_payment/{{ payment_id }}/{{ method }}"></form>
                     <div class="col text-center">
-                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Gotówka</button>
-                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Karta Płatnicza</button>
-                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Blik</button>
-                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Voucher</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="cash">Gotówka</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="card">Karta Płatnicza</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="blik">Blik</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="voucher">Voucher</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const payButtons = document.querySelectorAll('.pay-btn');
+        const payForm = document.getElementById('payment-form');
+        
+        payButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const paymentId = button.getAttribute('data-id');
+                const cash = document.getElementById('cash');
+                const card = document.getElementById('card');
+                const blik = document.getElementById('blik');
+                const voucher = document.getElementById('voucher');
+
+                cash.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/1";
+                    handlePayment(action);
+                });
+
+                card.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/2";
+                    handlePayment(action);
+                });
+
+                blik.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/3";
+                    handlePayment(action);
+                });
+
+                voucher.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/4";
+                    handlePayment(action);
+                });
+                
+            });
+        });
+
+        function handlePayment(action) {
+            const form = document.createElement('form');
+            form.setAttribute('method', 'POST');
+            form.setAttribute('action', action);
+            form.style.display = 'none';
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+</script>
+
 {% endblock %}
