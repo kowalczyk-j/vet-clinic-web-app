@@ -111,6 +111,55 @@ body {
     color: #397d02;
 }
 
+/* Styles specific to patients */
+.search-add /* ????? */ {
+  align-content: right;
+  align-items: right;
+}
+
+#pesel {
+  background-image: url('search_icon.png'); /* Add a search icon to input */
+  background-size: 24px;
+  background-position: 10px 12px; /* Position the search icon */
+  background-repeat: no-repeat; /* Do not repeat the icon image */
+  height: 50px;
+  width: 30%; /* Full-width */
+  padding: 12px 20px 12px 40px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  vertical-align: right;
+  margin: 10px;
+}
+
+.button-personalized {
+  height: 50px;
+  width: 200px;
+  display: inline-block;
+  margin: 10px;
+}
+
+.add-user {
+  text-align: right;
+  vertical-align: middle;
+}
+
+.trashy {
+  width: 15px;
+  height: 15px;
+}
+
+.button-row {
+  text-align: center;
+}
+
+#owners tr:hover {
+  background-color: #f2f2f2;
+}
+
+.linked {
+  cursor: pointer;
+  cursor: hand;
+}
+
 .custom-dropdown {
     width: 100%;
     margin-bottom: 10px;

@@ -1,7 +1,137 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Treść strony Employees -->
-<h1>Strona Płatności</h1>
-<!-- Dodatkowe elementy na stronie Employees -->
+<div class='container'>
+<h1>Oczekujące Płatności</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th>Pesel</th>
+            <th>ID Wizyty</th>
+            <th>Koszt</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in pending_payments %}
+            <tr>
+                <td>{{ payment.name }}</td>
+                <td>{{ payment.surname }}</td>
+                <td>{{ payment.pesel }}</td>
+                <td>{{ payment.appointment_id }}</td>
+                <td>{{ payment.amount }}</td>
+                <td><button class="btn btn-outline-secondary btn-block button-personalized pay-btn" type="button" data-toggle="modal" data-target="#payment-form" data-id="{{ payment.payment_id }}">Opłać</button></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<div class='container'>
+<h1>Historia Płatności</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th>Pesel</th>
+            <th>ID_wizyty</th>
+            <th>Data</th>
+            <th>Sposób zapłaty</th>
+            <th>Koszt</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payment_history %}
+            <tr>
+                <td>{{ payment.name }}</td>
+                <td>{{ payment.surname }}</td>
+                <td>{{ payment.pesel }}</td>
+                <td>{{ payment.appointment_id }}</td>
+                <td>{{ payment.date_paid }}</td>
+                <td>{{ payment.method_of_payment }}</td>
+                <td>{{ payment.amount }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<div class="modal fade" role="dialog" tabindex="1" id="payment-form"> 
+    <div class="py-1">
+        <div class="modal-dialog modal-lg">
+            <div class = 'modal-content'>
+                <div class="modal-header">
+                    <h5>Wybierz sposób zapłaty</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top">
+                        <input type="checkbox" class="custom-control-input" id="checkbox-1">
+                        <label class="custom-control-label" for="checkbox-1">wygeneruj fakturę</label>
+                    </div>
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/process_payment/{{ payment_id }}/{{ method }}"></form>
+                    <div class="col text-center">
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="cash">Gotówka</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="card">Karta Płatnicza</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="blik">Blik</button>
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit" id="voucher">Voucher</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const payButtons = document.querySelectorAll('.pay-btn');
+        const payForm = document.getElementById('payment-form');
+        
+        payButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const paymentId = button.getAttribute('data-id');
+                const cash = document.getElementById('cash');
+                const card = document.getElementById('card');
+                const blik = document.getElementById('blik');
+                const voucher = document.getElementById('voucher');
+
+                cash.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/1";
+                    handlePayment(action);
+                });
+
+                card.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/2";
+                    handlePayment(action);
+                });
+
+                blik.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/3";
+                    handlePayment(action);
+                });
+
+                voucher.addEventListener('click', function() {
+                    const action = '/process_payment/' + paymentId + "/4";
+                    handlePayment(action);
+                });
+                
+            });
+        });
+
+        function handlePayment(action) {
+            const form = document.createElement('form');
+            form.setAttribute('method', 'POST');
+            form.setAttribute('action', action);
+            form.style.display = 'none';
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+</script>
+
 {% endblock %}

@@ -1,46 +1,224 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Właściciele zwierząt</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Owner ID</th>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Address</th>
-                <th>Phone Number</th>
-                <th>Pesel</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for owner in owners %}
-                <tr>
-                    <td>{{ owner.owner_id }}</td>
-                    <td>{{ owner.name }}</td>
-                    <td>{{ owner.surname }}</td>
-                    <td>{{ owner.address }}</td>
-                    <td>{{ owner.phone_number }}</td>
-                    <td>{{ owner.pesel }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    <div class="add-patient-form">
-        <h2>Dodaj właściciela</h2>
-        <form action="/add_owner" method="POST">
-            <label for="name">Name:</label>
-            <input type="text" name="name" id="name" required>
-            <label for="surname">Surname:</label>
-            <input type="text" name="surname" id="surname" required>
-            <label for="address">Address:</label>
-            <input type="text" name="address" id="address" required>
-            <label for="phone_number">Phone Number:</label>
-            <input type="text" name="phone_number" id="phone_number" required>
-            <label for="pesel">Pesel:</label>
-            <input type="text" name="pesel" id="pesel" required>
-            <button type="submit">Dodaj właściciela</button>
-        </form>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="{{ category }}-flash">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+
+<div class='container'>
+    <h1>Właściciele</h1>
+    <div class="row search-add">
+        <input class="pesel-searchbar" type="text" id="pesel" onkeyup="searchFunction()" placeholder="Wyszukaj za pomocą Pesela...">
+        <div class="add-user">
+            <button class="btn btn-success btn-block button-personalized" type="button" data-toggle="modal" data-target="#add-owner-form">Dodaj właściciela</button>
+        </div>
     </div>
+
+    <div class="row flex-lg-nowrap">
+        <table id="owners">
+            <thead>
+                <tr>
+                    <th>Imię</th>
+                    <th>Nazwisko</th>
+                    <th>Adres</th>
+                    <th>Numer Telefonu</th>
+                    <th>Numer Pesel</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for owner in owners %}
+                    <tr>
+                        <!-- <td class="align-middle">
+                            <div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top">
+                              <input type="checkbox" class="custom-control-input" id="{{owner.owner_id}}">
+                              <label class="custom-control-label" for="{{owner.owner_id}}"></label>
+                            </div>
+                        </td> -->
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.name }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.surname }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.address }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.phone_number }}</td>
+                        <td class="linked" onclick="window.location='/patients/{{ owner.owner_id }}'">{{ owner.pesel }}</td>
+                        <td class="text-center align-middle">
+                            <div class="btn-group align-top">
+                                <button class="btn btn-sm btn-outline-secondary badge edit-btn" type="button" data-toggle="modal" data-target="#edit-owner-form" data-pesel="{{ owner.pesel }}">Edytuj</button>
+                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-pesel="{{ owner.pesel }}"><img class='trashy' src="../static/css/trash.png"></button>
+                            </div>
+                          </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+<!-- add owner form -->
+<div class="modal fade" role="dialog" tabindex="-1" id="add-owner-form"> 
+      <div class="py-1">       
+        <div class="modal-dialog modal-lg" role="document">
+            <div class = 'modal-content'>
+                <div class="modal-header">
+                    <h5>Dodaj nowego właściciela</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <form class="form" novalidate="" action="/add_owner" method="POST">
+                    <div class="form-group">
+                        <label for="name">Imię:</label>
+                        <input type="text" name="name" id="name" required placeholder="...">
+                    </div>
+                    <div class="form-group">
+                        <label for="surname">Nazwisko:</label>
+                        <input type="text" name="surname" id="surname" required placeholder="...">
+                    </div>
+                    <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Ulica</label>
+                            <input type="text" name="street" id="street" required placeholder="...">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Kod pocztowy</label>
+                            <input type="text" name="postal code" id="postal code" required placeholder="xx-xxx">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Miasto</label>
+                            <input type="text" name="city" id="city" required placeholder="...">
+                        </div>
+                    </div>
+                    </div>
+                    <label for="phone_number">Numer Telefonu:</label>
+                    <input type="text" name="phone_number" id="phone_number" required placeholder="...">
+                    <label for="pesel">Pesel:</label>
+                    <input type="text" name="pesel" id="number_pesel" required placeholder="...">
+                    <button class="btn btn-success btn-block" type="submit">Potwierdź</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- edit owner form -->
+<div class="modal fade" role="dialog" tabindex="-1" id="edit-owner-form"> 
+    <div class="py-1">       
+      <div class="modal-dialog modal-lg" role="document">
+          <div class = 'modal-content'>
+              <div class="modal-header">
+                  <h5>Edytuj właściciela</h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                      <span aria-hidden="true">×</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+              <form class="form" novalidate="" id="edit-form" action="/edit_owner/{{ pesel }}" method="POST">
+                  <div class="form-group">
+                      <label for="name">Imię:</label>
+                      <input type="text" name="name" id="name" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                      <label for="surname">Nazwisko:</label>
+                      <input type="text" name="surname" id="surname" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                    <label for="surname">Adres:</label>
+                    <input type="text" name="address" id="address" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                    <label for="phone_number">Numer Telefonu:</label>
+                    <input type="text" name="phone_number" id="phone_number" required placeholder="...">
+                  </div>
+                  <button class="btn btn-success btn-block" type="submit" id="submit-edit">Potwierdź</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- confirmation window -->
+<div class="modal fade" role="dialog" tabindex="0" id="confirmation" action=""> 
+    <div class="py-1">
+        <div class="modal-dialog modal-lg">
+            <div class = 'modal-content'>
+                <div class="modal-header">
+                    <h5>Czy na pewno chcesz usunąć tego właściciela?</h5>
+                </div>
+                <div class="modal-body">
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_owner/{{ pesel }}">
+                    <div class="col text-center">
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
+                        <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+        
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const pesel = button.getAttribute('data-pesel');
+                const action = '/delete_owner/' + pesel;
+                deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editButtons = document.querySelectorAll('.edit-btn');
+        const editForm = document.getElementById('edit-form');
+        
+        editButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const pesel = button.getAttribute('data-pesel');
+                const action = '/edit_owner/' + pesel;
+                editForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
+
+<script>
+    function searchFunction() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("pesel");
+      filter = input.value.toString();
+      table = document.getElementById("owners");
+      tr = table.getElementsByTagName("tr");
+    
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[4];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toString().indexOf(filter) === 0) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+</script>
+
 {% endblock %}
