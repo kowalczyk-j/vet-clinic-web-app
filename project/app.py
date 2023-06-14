@@ -154,19 +154,16 @@ def add_appointment_route():
     return redirect('/calendar')
 
 
-@app.route('/remove-appointment', methods=['POST'])
-def remove_appointment():
-    data = request.get_json()  # Odczytaj dane z ciała żądania jako JSON
-    appointment_id = data.get('id')  # Pobierz ID wizyty z danych JSON
-    # Dodaj kod usuwający wizytę o podanym ID z bazy danych lub innej struktury danych
+@app.route('/delete_appointment/<appointment_id>', methods=['POST'])
+def delete_appointment_route(appointment_id):
     try:
         if get_latest_appointment().appointment_id < int(appointment_id):
             raise ValueError
         delete_appointment(appointment_id)
-        # Zwróć odpowiedź potwierdzającą usunięcie wizyty
-        return f'Wizyta o ID {appointment_id} została pomyślnie usunięta.'
+        flash(f'Wizyta o id {appointment_id} została usunięta pomyślnie.', 'success')
     except ValueError as e:
-        return jsonify({'error': str(e)}), 400
+        flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
+    return redirect('/calendar')
 
 
 @app.route('/schedule')

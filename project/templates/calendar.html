@@ -198,7 +198,7 @@
                     <h5>Czy na pewno chcesz usunąć wizytę?</h5>
                 </div>
                 <div class="modal-body">
-                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_appointment/{{ pesel }}">
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_appointment/{{ appointment_id }}">
                     <div class="col text-center">
                         <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
                         <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
@@ -209,6 +209,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const appointment_id = button.getAttribute('data-id');
+                const action = '/delete_appointment/' + appointment_id;
+                deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
