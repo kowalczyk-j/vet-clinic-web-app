@@ -1,7 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Treść strony -->
-<h1>Strona Harmonogram</h1>
-<!-- Dodatkowe elementy na stronie -->
+
+<body>
+
+<div class="schedule-container">
+    <h1>Wyświetlono harmonogram </h1>
+    <div class="doctor-drop-container">
+        <form>
+            <select name="doctor_dropdown" required class="custom-dropdown">
+                <option value="" selected disabled hidden>Dr. Anny Nowak</option>
+                {% for doc in doctors %}
+                    <option value="{{ doc['id'] }}">{{ doc['name'] }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+    
+<div id='calendar'></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            allDaySlot: false,
+            locale: 'pl',
+            initialView: 'timeGridWeek',
+            headerToolbar: {
+                left: 'prev,next,today',
+                center: 'title',
+                right: 'timeGridWeek,timeGridDay',
+            },
+            contentHeight: 'auto',
+            events: '/send-schedule',
+        });
+
+        calendar.render();
+    });
+</script>
+
+</body>
+
 {% endblock %}
