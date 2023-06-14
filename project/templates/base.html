@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Weterynaria</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
-    <!-- Our stylesheet-->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+    <head>
+        <title>Weterynaria</title>
+        <!-- Include Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Include fullcalendar lib -->
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+        <!-- Include fullcalendar polish extension -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/pl.js"></script>
+        <!-- Our stylesheet-->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="/">🏠</a>
