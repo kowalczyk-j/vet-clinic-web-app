@@ -5,7 +5,8 @@ from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_o
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
     get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
-    get_pending_payments, get_payments_history, update_payment, get_owners_animals, update_appointments_date_time
+    get_pending_payments, get_payments_history, update_payment, get_owners_animals, update_appointments_date_time, \
+    get_employee_schedule
 
 app = Flask(__name__)
 
@@ -152,7 +153,6 @@ def delete_appointment_route(appointment_id):
 
 @app.route('/postpone_appointment/<appointment_id>', methods=['POST'])
 def postpone_appointment_route(appointment_id):
-    print(appointment_id)
     new_day = request.form['new_day']
     start_hour = request.form['start_hour']
     try:
@@ -165,8 +165,34 @@ def postpone_appointment_route(appointment_id):
 
 @app.route('/schedule')
 def schedule():
-    return render_template('schedule.html')
+    doctors_data = []
+    for vet in get_all_vets():
+        vet_employee = get_employee_by_id(vet.employee_id)
+        doctors_data.append({
+            'employee_id': vet_employee.employee_id,
+            'name': vet_employee.name,
+            'surname': vet_employee.surname,
+            'spec': vet.specialization,
+        })
+    return render_template('schedule.html', doctors=doctors_data)
 
+@app.route('/get_schedule', methods=['POST', 'GET'])
+def get_schedule():
+    if request.method == 'POST':
+        employee_id = int(request.form.get('doctor_dropdown'))
+        employee_schedule = get_employee_schedule(get_employee_by_id(employee_id))
+        events = []
+        for schedule in employee_schedule:
+            event = {
+                'title': 'Praca',
+                'daysOfWeek': schedule.week_day,
+                'startTime': schedule.hour_start.isoformat(),
+                'endTime': schedule.hour_end.isoformat(),
+            }
+            events.append(event)
+
+        return jsonify(events)
+    return redirect('/schedule')
 
 @app.route('/payments')
 def payments():
