@@ -1,12 +1,11 @@
 from flask import Flask, render_template, request, jsonify, redirect, flash, abort
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError, OperationalError
 from datetime import datetime
 from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_owner, delete_owner, \
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
     get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
-    get_pending_payments, get_payments_history, update_payment, get_owners_animals
+    get_pending_payments, get_payments_history, update_payment, get_owners_animals, update_appointments_date_time
 
 app = Flask(__name__)
 
@@ -79,6 +78,7 @@ def calendar():
                            procedures=treatment_data,
                            animals=animal_data)
 
+
 @app.route('/send-appointments')
 def send_appointments_data_to_calendar():
     appointments = get_all_appointments()
@@ -106,9 +106,6 @@ def get_appointment_details(appointment):
     vet = get_employee_by_id(appointment.vet_id)
     room = get_room_by_id(appointment.room_id)
     return animal.name, animal.species, owner.name, owner.surname, owner.owner_id, vet.name, vet.surname, room.room_number
-
-
-from sqlalchemy.exc import OperationalError
 
 
 @app.route('/add-appointment', methods=['POST'])
@@ -150,6 +147,19 @@ def delete_appointment_route(appointment_id):
         flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
     except OperationalError:
         flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
+    return redirect('/calendar')
+
+
+@app.route('/postpone_appointment/<appointment_id>', methods=['POST'])
+def postpone_appointment_route(appointment_id):
+    print(appointment_id)
+    new_day = request.form['new_day']
+    start_hour = request.form['start_hour']
+    try:
+        update_appointments_date_time(appointment_id, new_day, start_hour)
+        flash(f"Wizyta o id {appointment_id} została przełożona. Nowa data: {start_hour} {new_day}", "success")
+    except OperationalError:
+        flash(f"Wystąpił błąd podczas przekładania wizyty. Spróbuj ponownie.", "error")
     return redirect('/calendar')
 
 

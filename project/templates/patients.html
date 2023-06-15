@@ -124,19 +124,19 @@
               <form class="form" novalidate="" id="edit-form" action="/edit_owner/{{ pesel }}" method="POST">
                   <div class="form-group">
                       <label for="name">Imię:</label>
-                      <input type="text" name="name" id="name" required placeholder="...">
+                      <input type="text" name="name" id="edit_name" required placeholder="...">
                   </div>
                   <div class="form-group">
                       <label for="surname">Nazwisko:</label>
-                      <input type="text" name="surname" id="surname" required placeholder="...">
+                      <input type="text" name="surname" id="edit_surname" required placeholder="...">
                   </div>
                   <div class="form-group">
                     <label for="surname">Adres:</label>
-                    <input type="text" name="address" id="address" required placeholder="...">
+                    <input type="text" name="address" id="edit_address" required placeholder="...">
                   </div>
                   <div class="form-group">
                     <label for="phone_number">Numer Telefonu:</label>
-                    <input type="text" name="phone_number" id="phone_number" required placeholder="...">
+                    <input type="text" name="phone_number" id="edit_phone_number" required placeholder="...">
                   </div>
                   <button class="btn btn-success btn-block" type="submit" id="submit-edit">Potwierdź</button>
                   </form>
@@ -186,12 +186,29 @@
     document.addEventListener('DOMContentLoaded', function() {
         const editButtons = document.querySelectorAll('.edit-btn');
         const editForm = document.getElementById('edit-form');
-        
+        const nameInput = document.getElementById('edit_name');
+        const surnameInput = document.getElementById('edit_surname');
+        const addressInput = document.getElementById('edit_address');
+        const phoneNumberInput = document.getElementById('edit_phone_number');
+
         editButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 const pesel = button.getAttribute('data-pesel');
                 const action = '/edit_owner/' + pesel;
                 editForm.setAttribute('action', action);
+
+                // Pobieranie danych właściciela
+                const ownerRow = button.parentNode.parentNode.parentNode;
+                const ownerName = ownerRow.querySelector('.linked:nth-child(1)').innerText;
+                const ownerSurname = ownerRow.querySelector('.linked:nth-child(2)').innerText;
+                const ownerAddress = ownerRow.querySelector('.linked:nth-child(3)').innerText;
+                const ownerPhoneNumber = ownerRow.querySelector('.linked:nth-child(4)').innerText;
+
+                // Ustawianie wartości pól formularza na podstawie danych właściciela
+                nameInput.value = ownerName;
+                surnameInput.value = ownerSurname;
+                addressInput.value = ownerAddress;
+                phoneNumberInput.value = ownerPhoneNumber;
             });
         });
     });
@@ -222,3 +239,4 @@
 </script>
 
 {% endblock %}
+</div>

@@ -124,9 +124,12 @@ def get_vet_by_id(id):
     stmt = select(vet).where(vet.c.vet_id == id)
     return execute_statement(stmt).first()
 
+
 def get_all_vets():
     stmt = select(vet)
     return execute_statement(stmt).all()
+
+
 def get_vets_appointments(vet_row):
     stmt = (select(appointment).join(vet)
             .where(appointment.c.vet_id == vet_row.vet_id))
@@ -140,9 +143,11 @@ def get_appointment_by_id(id):
     stmt = select(appointment).where(appointment.c.appointment_id == id)
     return execute_statement(stmt).first()
 
+
 def get_latest_appointment():
     stmt = select(appointment).order_by(appointment.c.appointment_id.desc()).limit(1)
     return execute_statement(stmt).first()
+
 
 def get_all_appointments():
     subq = (select(procedure_appointment.c.appointment_id,
@@ -220,6 +225,11 @@ def add_appointment(vet_id, room_id, animal_id, date, time):
 
 def delete_appointment(appointment_id):
     stmt = delete(appointment).where(appointment.c.appointment_id == appointment_id)
+    execute_statement(stmt)
+
+
+def update_appointments_date_time(appointment_id, date, time):
+    stmt = update(appointment).where(appointment.c.appointment_id == appointment_id).values(date=date, time=time)
     execute_statement(stmt)
 
 

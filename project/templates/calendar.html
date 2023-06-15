@@ -90,8 +90,10 @@
                             <td class="linked" onclick="window.location='/patients/{{ appointment.owner_id }}'">{{ appointment.procedures }}</td>
                             <td class="text-center align-middle">
                                 <div class="btn-group align-top">
-                                    <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#change-time-form" data-id="{{ appointment.id }}">Przełóż</button>
-                                    <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-id="{{ appointment.id }}">
+                                    <button class="btn btn-sm btn-outline-secondary badge edit-btn" type="button" data-toggle="modal"
+                                            data-target="#change-time-form" data-appointment-id="{{ appointment.id }}"
+                                            data-new-day="{{ appointment.date.strftime('%Y-%m-%d') }}" data-start-hour="{{ appointment.time.strftime('%H:%M') }}">Przełóż</button>
+                                    <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" appointment_id="{{ appointment.id }}">
                                         <img class="trashy" src="../static/css/trash.png" width="25" height="25">
                                     </button>
                                     
@@ -180,14 +182,14 @@
                   </button>
               </div>
               <div class="modal-body">
-                <form class="form" id="edit-form" action="/edit_appointment" method="POST">
+                <form class="form" id="edit-form" action="/postpone_appointment/{{ appointment_id }}" method="POST">
                   <div class="form-group">
-                    <label for="new-day">Nowy dzień wizyty:</label>
-                    <input type="date" name="new-day" id="name" required placeholder="...">
+                    <label for="new_day">Nowy dzień wizyty:</label>
+                    <input type="date" name="new_day" id="new_day" required placeholder="...">
                   </div>                    
                   <div class="form-group">
-                      <label for="start-hour">Nowa godzina rozpoczęcia wizyty:</label>
-                      <input type="time" name="start-hour" id="name" required placeholder="...">
+                      <label for="start_hour">Nowa godzina rozpoczęcia wizyty:</label>
+                      <input type="time" name="start_hour" id="start_hour" required placeholder="...">
                   </div>
 
                   <button class="btn btn-success btn-block" type="submit" id="submit-edit">Przełóż</button>
@@ -227,9 +229,33 @@
 
         deleteButtons.forEach(function(button) {
             button.addEventListener('click', function() {
-                const appointment_id = button.getAttribute('data-id');
-                const action = '/delete_appointment/' + appointment_id;
+                const appointmentId = button.getAttribute('appointment_id');
+                const action = '/delete_appointment/' + appointmentId;
                 deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editButtons = document.querySelectorAll('.edit-btn');
+        const editForm = document.getElementById('edit-form');
+        const newDayInput = document.getElementById('new_day');
+        const startHourInput = document.getElementById('start_hour');
+
+        editButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const appointmentId = button.getAttribute('data-appointment-id');
+                const newDay = button.getAttribute('data-new-day');
+                const startHour = button.getAttribute('data-start-hour');
+
+                // Ustawiamy wartości pól formularza na podstawie danych z wiersza tabeli
+                newDayInput.value = newDay;
+                startHourInput.value = startHour;
+                const action = '/postpone_appointment/' + appointmentId;
+                editForm.setAttribute('action', action);
             });
         });
     });
@@ -258,22 +284,5 @@
       }
     }
 </script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const editButtons = document.querySelectorAll('.edit-btn');
-        const editForm = document.getElementById('edit-form');
-        
-        editButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                const id = button.getAttribute('data-id');
-                const action = '/edit_appointment/' + id + '/';
-                editForm.setAttribute('action', action);
-            });
-        });
-    });
-</script>
-
 
 {% endblock %}
