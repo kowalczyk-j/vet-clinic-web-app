@@ -22,11 +22,11 @@
                         <td>{{ animal.type }}</td>
                         <td>{{ animal.species }}</td>
                         <td>{{ animal.gender }}</td>
-                        <td>{{ animal.date_of_birth }}</td>
+                        <td>{{ animal.birthdate }}</td>
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
                                 <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#edit-owner-form">Edytuj</button>
-                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-pesel="{{ owner.pesel }}"><img class='trashy' src="../static/css/trash.png"></button>
+                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-id="{{ animal.animal_id }}"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
                         </td>
                     </tr>
@@ -36,4 +36,39 @@
     </div>
 </div>
 
+<!-- confirmation window -->
+<div class="modal fade" role="dialog" tabindex="0" id="confirmation" action=""> 
+    <div class="py-1">
+        <div class="modal-dialog modal-lg">
+            <div class = 'modal-content'>
+                <div class="modal-header">
+                    <h5>Czy na pewno chcesz usunąć to zwierzę?</h5>
+                </div>
+                <div class="modal-body">
+                    <form class="form" novalidate="" id="delete-form" method="POST" action="/delete_animal/{{ animal_id }}">
+                    <div class="col text-center">
+                        <button class="button-personalized btn btn-block btn-outline-secondary" type="submit">Potwierdź</button>
+                        <button class="button-personalized btn btn-block btn-success" type="button" data-dismiss="modal">Anuluj</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+        
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const id = button.getAttribute('data-id');
+                const action = '/delete_animal/' + id;
+                deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
 {% endblock %}
