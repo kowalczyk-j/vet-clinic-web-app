@@ -140,6 +140,69 @@ BEGIN
 END //
 
 
+CREATE TRIGGER check_room_availability_insert
+BEFORE INSERT ON appointment
+FOR EACH ROW
+BEGIN
+  DECLARE num_appointments INT;
+  SET num_appointments = (
+      SELECT COUNT(*) FROM appointment a
+      WHERE a.room_id = NEW.room_id
+      AND a.date = NEW.date
+      AND a.time <= NEW.time
+      AND a.time + (SELECT SUM(mp.estimate_time) FROM medical_procedure mp
+                    JOIN procedure_appointment pa on mp.procedure_id = pa.procedure_id
+                    WHERE mp.procedure_id = pa.procedure_id
+                    AND pa.appointment_id = a.appointment_id) >= NEW.time
+  );
+  IF num_appointments != 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Room is not available at that time';
+  END IF;
+END //
+
+
+CREATE TRIGGER check_room_availability_update
+BEFORE UPDATE ON appointment
+FOR EACH ROW
+BEGIN
+  DECLARE num_appointments INT;
+  DECLARE new_room_id INT;
+  SET num_appointments = (
+      SELECT COUNT(*) FROM appointment a
+      WHERE a.date = NEW.date
+      AND a.time <= NEW.time
+      AND a.time + (SELECT SUM(mp.estimate_time) FROM medical_procedure mp
+                    JOIN procedure_appointment pa on mp.procedure_id = pa.procedure_id
+                    WHERE mp.procedure_id = pa.procedure_id
+                    AND pa.appointment_id = a.appointment_id) >= NEW.time
+  );
+    IF num_appointments != 0 THEN
+        -- Find an available room
+        SET new_room_id = (
+            SELECT room_id
+            FROM room
+            WHERE room_id NOT IN (SELECT a.room_id
+                                  FROM appointment a
+                                  WHERE a.date = NEW.date
+                                    AND a.time <= NEW.time
+                                    AND a.time + (SELECT SUM(mp.estimate_time)
+                                                  FROM medical_procedure mp
+                                                           JOIN procedure_appointment pa on mp.procedure_id = pa.procedure_id
+                                                  WHERE mp.procedure_id = pa.procedure_id
+                                                    AND pa.appointment_id = a.appointment_id) >= NEW.time)
+            LIMIT 1
+    );
+      IF new_room_id IS NOT NULL THEN
+        SET NEW.room_id = new_room_id;
+      ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot update appointment. No available room.';
+      END IF;
+    END IF;
+END //
+
+
 CREATE TRIGGER check_vet_availability_insert
 BEFORE INSERT ON appointment
 FOR EACH ROW
