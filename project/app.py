@@ -134,6 +134,8 @@ def add_appointment_route():
         error_message = str(e)
         if 'Vet is not available at that time' in error_message:
             flash('Wystąpił błąd. Lekarz nie jest dostępny o podanej godzinie.', 'error')
+        elif 'Room is not available at that time' in error_message:
+            flash('Wystąpił błąd. Sala nie jest dostępna o podanej godzinie.', 'error')
         else:
             flash('Wystąpił błąd podczas dodawania wizyty. Spróbuj ponownie.', 'error')
     return redirect('/calendar')
@@ -155,11 +157,20 @@ def delete_appointment_route(appointment_id):
 def postpone_appointment_route(appointment_id):
     new_day = request.form['new_day']
     start_hour = request.form['start_hour']
+    if start_hour < '09:00' or start_hour > '19:00':
+        flash('Nie można umówić wizyty. Godziny pracy kliniki to 9:00 - 19:00', 'error')
+        return redirect('/calendar')
     try:
         update_appointments_date_time(appointment_id, new_day, start_hour)
         flash(f"Wizyta o id {appointment_id} została przełożona. Nowa data: {start_hour} {new_day}", "success")
-    except OperationalError:
-        flash(f"Wystąpił błąd podczas przekładania wizyty. Spróbuj ponownie.", "error")
+    except OperationalError as e:
+        error_message = str(e)
+        if 'Vet is not available at that time' in error_message:
+            flash('Lekarz nie jest dostępny o podanej godzinie. Usuń wizytę i dodaj ją na nowo, wybierając innego lekarza.', 'error')
+        elif 'Cannot update appointment. No available room.' in error_message:
+            flash('Żadna z sal nie jest dostępna. Wybierz inny termin.', 'error')
+        else:
+            flash(f"Wystąpił błąd podczas przekładania wizyty. Usuń wizytę i dodaj ją na nowo.", "error")
     return redirect('/calendar')
 
 
@@ -175,6 +186,7 @@ def schedule():
             'spec': vet.specialization,
         })
     return render_template('schedule.html', doctors=doctors_data)
+
 
 @app.route('/get_schedule', methods=['POST', 'GET'])
 def get_schedule():
@@ -193,6 +205,7 @@ def get_schedule():
 
         return jsonify(events)
     return redirect('/schedule')
+
 
 @app.route('/payments')
 def payments():

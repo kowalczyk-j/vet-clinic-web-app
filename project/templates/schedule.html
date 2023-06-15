@@ -53,7 +53,15 @@
             failure: function() {
                 alert('Błąd pobierania harmonogramu pracownika.');
             }
-        }
+        },
+        hiddenDays: [0],
+            buttonText: {
+                today: 'Dzisiaj',
+                week: 'Tydzień',
+                day: 'Dzień',
+            },
+        slotMinTime: '09:00',
+        slotMaxTime: '19:00',
     });
 
     calendar.render();
