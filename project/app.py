@@ -6,7 +6,7 @@ from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_o
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
     get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
     get_pending_payments, get_payments_history, update_payment, get_owners_animals, update_appointments_date_time, \
-    get_employee_schedule
+    get_employee_schedule, get_vet_by_id
 
 app = Flask(__name__)
 
@@ -104,9 +104,10 @@ def send_appointments_data_to_calendar():
 def get_appointment_details(appointment):
     animal = get_animal_by_id(appointment.animal_id)
     owner = get_owner_by_id(animal.owner_id)
-    vet = get_employee_by_id(appointment.vet_id)
+    vet = get_vet_by_id(appointment.vet_id)
+    vet_employee = get_employee_by_id(vet.employee_id)
     room = get_room_by_id(appointment.room_id)
-    return animal.name, animal.species, owner.name, owner.surname, owner.owner_id, vet.name, vet.surname, room.room_number
+    return animal.name, animal.species, owner.name, owner.surname, owner.owner_id, vet_employee.name, vet_employee.surname, room.room_number
 
 
 @app.route('/add-appointment', methods=['POST'])
@@ -127,7 +128,6 @@ def add_appointment_route():
     try:
         add_appointment(doctor_id, room_id, animal_id, date, time)
         for procedure_id in procedure_ids:
-            print(procedure_id)
             add_procedure_to_appointment(get_latest_appointment().appointment_id, procedure_id)
         flash('Wizyta została dodana pomyślnie.', 'success')
     except OperationalError as e:
