@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, flash, abort
+from flask import Flask, render_template, request, jsonify, redirect, flash
 from sqlalchemy.exc import IntegrityError, OperationalError
 from datetime import datetime
 from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_owner, delete_owner, \
@@ -6,7 +6,8 @@ from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_o
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
     get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
     get_pending_payments, get_payments_history, update_payment, get_owners_animals, delete_animal, \
-    get_invoice_from_payment, update_appointments_date_time, get_employee_schedule, get_vet_by_id
+    get_invoice_from_payment, update_appointments_date_time, get_employee_schedule, get_vet_by_id, \
+    add_animal, get_animal_disease_history
 from src.invoices.invoice_generator import generate_invoice_pdf
 
 app = Flask(__name__)
@@ -259,7 +260,11 @@ def patients():
 def profile(owner_id):
     owner = get_owner_by_id(owner_id)
     animals = get_owners_animals(owner)
-    return render_template('profile.html', owner=owner, animals=animals)
+    diseases = {}
+    for animal in animals:
+        diseases[animal.animal_id] = get_animal_disease_history(
+            animal.animal_id)
+    return render_template('profile.html', owner=owner, animals=animals, diseases=diseases)
 
 
 @app.route('/add_owner', methods=['POST'])
@@ -306,6 +311,26 @@ def edit_owner_route(pesel):
 def delete_owner_route(pesel):
     delete_owner(pesel)
     return redirect('/patients')
+
+
+@app.route('/add_animal', methods=['POST'])
+def add_animal_route():
+    name = request.form['name']
+    type = request.form['type']
+    species = request.form['species']
+    gender = request.form['gender']
+    birthdate = request.form['birthdate']
+    owner_id = request.referrer.split('/')[-1]
+    if (not name or not type or not species or not gender
+            or not birthdate):
+        flash('Wystąpił błąd. Proszę wypełnić wszystkie pola.', 'error')
+    else:
+        try:
+            add_animal(owner_id, name, species, type, gender, birthdate)
+            flash("Poprawnie zarejestrowano zwierzę!", "success")
+        except OperationalError:
+            flash("Wystąpił błąd. Podana data urodzenia jest w przyszłości", "error")
+    return redirect(request.referrer)
 
 
 @app.route('/delete_animal/<animal_id>', methods=['POST'])

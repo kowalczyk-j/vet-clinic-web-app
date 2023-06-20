@@ -88,13 +88,13 @@ def get_animal_by_name_and_owner(owner_row, animal_name):
     return None
 
 
-def get_animal_disease_history(animal_row):
-    stmt = (select(disease_history, disease.c.name)
+def get_animal_disease_history(animal_id):
+    stmt = (select(disease_history, disease.c.name.label('name'))
             .join_from(disease_history, animal,
                        disease_history.c.animal_id == animal.c.animal_id)
             .join_from(disease_history, disease,
                        disease_history.c.disease_id == disease.c.disease_id)
-            .where(animal.c.animal_id == animal_row.animal_id))
+            .where(animal.c.animal_id == animal_id))
     return execute_statement(stmt).all()
 
 
