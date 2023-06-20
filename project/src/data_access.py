@@ -117,6 +117,11 @@ def add_animal(owner_id, name, species, type, gender, birthdate):
     execute_statement(stmt)
 
 
+def delete_animal(animal_id):
+    stmt = delete(animal).where(animal.c.animal_id == animal_id)
+    execute_statement(stmt)
+
+
 # ----------- VET -----------
 
 
@@ -145,7 +150,8 @@ def get_appointment_by_id(id):
 
 
 def get_latest_appointment():
-    stmt = select(appointment).order_by(appointment.c.appointment_id.desc()).limit(1)
+    stmt = select(appointment).order_by(
+        appointment.c.appointment_id.desc()).limit(1)
     return execute_statement(stmt).first()
 
 
@@ -160,7 +166,8 @@ def get_all_appointments():
             .group_by(procedure_appointment.c.appointment_id)
             .subquery())
 
-    stmt = select(appointment, subq.c.duration).join(subq).order_by(appointment.c.date, appointment.c.time)
+    stmt = select(appointment, subq.c.duration).join(
+        subq).order_by(appointment.c.date, appointment.c.time)
     return execute_statement(stmt).all()
 
 
@@ -224,7 +231,8 @@ def add_appointment(vet_id, room_id, animal_id, date, time):
 
 
 def delete_appointment(appointment_id):
-    stmt = delete(appointment).where(appointment.c.appointment_id == appointment_id)
+    stmt = delete(appointment).where(
+        appointment.c.appointment_id == appointment_id)
     execute_statement(stmt)
 
 
@@ -294,6 +302,21 @@ def get_payments_history():
             .join_from(animal, owner, owner.c.owner_id == animal.c.owner_id)
             .where(payment.c.date_paid != None))
     return execute_statement(stmt).all()
+
+
+def get_invoice_from_payment(payment_id):
+    stmt = (select(owner.c.name, owner.c.surname, owner.c.address, payment.c.amount,
+                   payment.c.date_paid, payment_method.c.name.label(
+                       "method_of_payment"), appointment.c.date)
+            .join_from(payment, payment_method,
+                       payment.c.method_id == payment_method.c.method_id)
+            .join_from(payment, appointment,
+                       payment.c.appointment_id == appointment.c.appointment_id)
+            .join_from(appointment, animal,
+                       appointment.c.animal_id == animal.c.animal_id)
+            .join_from(animal, owner, owner.c.owner_id == animal.c.owner_id)
+            .where(payment.c.payment_id == payment_id))
+    return execute_statement(stmt).one()
 
 
 def update_payment(payment_id, method_id):

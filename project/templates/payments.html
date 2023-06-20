@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="{{ category }}-flash">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+
 <div class='container'>
 <h1>Oczekujące Płatności</h1>
 <table>
@@ -99,27 +106,32 @@
                 const card = document.getElementById('card');
                 const blik = document.getElementById('blik');
                 const voucher = document.getElementById('voucher');
+                const invoice = document.getElementById('checkbox-1');
 
                 cash.addEventListener('click', function() {
-                    const action = '/process_payment/' + paymentId + "/1";
+                    const invoice_checked = invoice.checked ? "1" : "0";
+                    const action = '/process_payment/' + paymentId + "/1/" + invoice_checked;
                     handlePayment(action);
                 });
 
                 card.addEventListener('click', function() {
-                    const action = '/process_payment/' + paymentId + "/2";
+                    const invoice_checked = invoice.checked ? "1" : "0";
+                const action = '/process_payment/' + paymentId + "/2/" + invoice_checked;
                     handlePayment(action);
                 });
 
                 blik.addEventListener('click', function() {
-                    const action = '/process_payment/' + paymentId + "/3";
+                    const invoice_checked = invoice.checked ? "1" : "0";
+                    const action = '/process_payment/' + paymentId + "/3/" + invoice_checked;
                     handlePayment(action);
                 });
 
                 voucher.addEventListener('click', function() {
-                    const action = '/process_payment/' + paymentId + "/4";
+                    const invoice_checked = invoice.checked ? "1" : "0";
+                    const action = '/process_payment/' + paymentId + "/4/" + invoice_checked;
                     handlePayment(action);
                 });
-                
+
             });
         });
 

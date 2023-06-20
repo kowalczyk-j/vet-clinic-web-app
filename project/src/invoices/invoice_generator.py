@@ -55,7 +55,8 @@ def prepare_invoice_content(invoice_data, invoice_number):
     heading_style, normal_style = get_font_styles()
     table_style = get_table_style()
     content = []
-    content.append(Paragraph(f"Faktura VAT nr {invoice_number}", heading_style))
+    content.append(
+        Paragraph(f"Faktura VAT nr {invoice_number}", heading_style))
     content.append(Spacer(1, 20))
 
     # Dane firmy
@@ -72,15 +73,17 @@ def prepare_invoice_content(invoice_data, invoice_number):
 
     # Dane nabywcy
     content.append(Paragraph("Dane nabywcy:", heading_style))
-    content.append(Paragraph(f"Imię i nazwisko: {invoice_data['nabywca']['imie_nazwisko']}", normal_style))
-    content.append(Paragraph(f"Adres: {invoice_data['nabywca']['adres']} \n POL", normal_style))
+    content.append(Paragraph(
+        f"Imię i nazwisko: {invoice_data['nabywca']['imie_nazwisko']}", normal_style))
+    content.append(
+        Paragraph(f"Adres: {invoice_data['nabywca']['adres']} \n POL", normal_style))
     content.append(Paragraph("<b>NIP:</b> BRAK", normal_style))
     content.append(Spacer(1, 20))
 
     # Informacje dodatkowe
-    content.append(Paragraph("Data sprzedaży: 2023-05-29", normal_style))
-    content.append(Paragraph("Data płatności: 2023-05-29", normal_style))
-    content.append(Paragraph("Sposób płatności: Karta", normal_style))
+    content.append(Paragraph(f"Data sprzedaży: {invoice_data['data_sprzedazy']}", normal_style))
+    content.append(Paragraph(f"Data płatności: {invoice_data['data_oplaty']}", normal_style))
+    content.append(Paragraph(f"Sposób płatności: {invoice_data['sposob_platnosci']}", normal_style))
     content.append(Spacer(1, 20))
 
     # Pozycje faktury
@@ -88,7 +91,8 @@ def prepare_invoice_content(invoice_data, invoice_number):
     total_cost = 0
     content.append(Paragraph("Pozycje faktury:", heading_style))
     items = invoice_data['pozycje']
-    item_data = [['Lp.', 'Nazwa towaru', 'VAT', 'Ilość', 'Cena netto', 'Cena brutto', 'Razem']]
+    item_data = [['Lp.', 'Nazwa towaru', 'VAT',
+                  'Ilość', 'Cena netto', 'Cena brutto', 'Razem']]
     for i, item in enumerate(items, start=1):
         item_cost = item['cena_brutto']*item['ilosc']
         item_row = [
@@ -102,13 +106,15 @@ def prepare_invoice_content(invoice_data, invoice_number):
         ]
         total_cost += item_cost
         item_data.append(item_row)
-    item_table = Table(item_data, colWidths=[20 * mm, None, 20 * mm, 20 * mm, 30 * mm, 30 * mm, 30 * mm])
+    item_table = Table(item_data, colWidths=[
+                       20 * mm, None, 20 * mm, 20 * mm, 30 * mm, 30 * mm, 30 * mm])
     item_table.setStyle(table_style)
     content.append(item_table)
     content.append(Spacer(1, 20))
 
     # Podsumowanie
-    content.append(Paragraph(f"Do zapłaty: {total_cost:.2f} PLN".replace(".", ","), heading_style))
+    content.append(Paragraph(
+        f"Do zapłaty: {total_cost:.2f} PLN".replace(".", ","), heading_style))
     content.append(Spacer(1, 20))
     content.append(Paragraph(77 * "_", normal_style))
     return content
@@ -143,7 +149,3 @@ invoice_data = {
         },
     ],
 }
-
-# TODO: usunąć wywołanie funkcji poniżej
-if __name__ == "__main__":
-    generate_invoice_pdf(invoice_data)

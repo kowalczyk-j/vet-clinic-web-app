@@ -5,8 +5,9 @@ from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_o
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
     get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
-    get_pending_payments, get_payments_history, update_payment, get_owners_animals, update_appointments_date_time, \
-    get_employee_schedule, get_vet_by_id
+    get_pending_payments, get_payments_history, update_payment, get_owners_animals, delete_animal, \
+    get_invoice_from_payment, update_appointments_date_time, get_employee_schedule, get_vet_by_id
+from src.invoices.invoice_generator import generate_invoice_pdf
 
 app = Flask(__name__)
 
@@ -214,10 +215,38 @@ def payments():
     return render_template('payments.html', pending_payments=pending_payments, payment_history=payment_history)
 
 
-@app.route('/process_payment/<payment_id>/<method_id>', methods=['POST'])
-def process_payment(payment_id, method_id):
+@app.route('/process_payment/<payment_id>/<method_id>/<invoice>', methods=['POST'])
+def process_payment(payment_id, method_id, invoice):
+    flash_message = "Opłacono wizytę "
     update_payment(payment_id, method_id)
+    if invoice == "1":
+        invoice_data = get_invoice_data(payment_id)
+        generate_invoice_pdf(invoice_data)
+        flash_message += "oraz pobrano fakturę"
+    flash(flash_message, "success")
     return redirect("/payments")
+
+
+def get_invoice_data(payment_id):
+    raw_data = get_invoice_from_payment(payment_id)
+    invoice_data = {
+        "nabywca": {
+            "imie_nazwisko": f"{raw_data.name} {raw_data.surname}",
+            "adres": raw_data.address,
+        },
+        "data_sprzedazy": raw_data.date,
+        "data_oplaty": raw_data.date_paid,
+        "sposob_platnosci": raw_data.method_of_payment,
+        "pozycje": [
+            {
+                "opis": "Konsultacja weterynaryjna",
+                "ilosc": 1,
+                "cena_brutto": float(raw_data.amount),
+                "wartosc": float(raw_data.amount),
+            }
+        ],
+    }
+    return invoice_data
 
 
 @app.route('/patients')
@@ -277,6 +306,12 @@ def edit_owner_route(pesel):
 def delete_owner_route(pesel):
     delete_owner(pesel)
     return redirect('/patients')
+
+
+@app.route('/delete_animal/<animal_id>', methods=['POST'])
+def delete_animal_route(animal_id):
+    delete_animal(animal_id)
+    return redirect(request.referrer)
 
 
 if __name__ == '__main__':

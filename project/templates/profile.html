@@ -38,8 +38,8 @@
                         <td>{{ animal.birthdate }}</td>
                         <td class="text-center align-middle">
                             <div class="btn-group align-top">
-                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#edit-animal-form">Edytuj</button>
-                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-pesel="{{ animal.animal_id }}"><img class='trashy' src="../static/css/trash.png"></button>
+                                <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#edit-owner-form">Edytuj</button>
+                                <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-id="{{ animal.animal_id }}"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
                         </td>
                         <td class="text-center align-middle">
@@ -73,6 +73,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- edit animal form -->
 <div class="modal fade" role="dialog" tabindex="-1" id="edit-animal-form"> 
@@ -200,4 +201,20 @@
       </div>
   </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+        
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const id = button.getAttribute('data-id');
+                const action = '/delete_animal/' + id;
+                deleteForm.setAttribute('action', action);
+            });
+        });
+    });
+</script>
+
 {% endblock %}
