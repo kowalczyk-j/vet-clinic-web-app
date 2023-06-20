@@ -1,5 +1,4 @@
-from sqlalchemy.exc import OperationalError
-from flask import Flask, render_template, request, jsonify, redirect, flash
+from flask import Flask, render_template, request, jsonify, redirect, flash, abort
 from sqlalchemy.exc import IntegrityError, OperationalError
 from datetime import datetime
 from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_owner, delete_owner, \
@@ -7,7 +6,7 @@ from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_o
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
     get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
     get_pending_payments, get_payments_history, update_payment, get_owners_animals, delete_animal, \
-    get_invoice_from_payment
+    get_invoice_from_payment, update_appointments_date_time, get_employee_schedule, get_vet_by_id
 from src.invoices.invoice_generator import generate_invoice_pdf
 
 app = Flask(__name__)
@@ -60,7 +59,7 @@ def calendar():
     table_data = []
 
     for appointment in appointments:
-        animal_name, animal_species, owner_name, owner_surname, vet_name, vet_surname, room_number = get_appointment_details(
+        animal_name, animal_species, owner_name, owner_surname, owner_id, vet_name, vet_surname, room_number = get_appointment_details(
             appointment)
         procedures = get_procedures_with_appointment(appointment)
         appointment_data = {
@@ -70,7 +69,8 @@ def calendar():
             'doctor': f"{vet_name} {vet_surname}",
             'room': room_number,
             'animal': f"{animal_species} {animal_name} (Właściciel: {owner_name} {owner_surname})",
-            'procedures': ', '.join(p.name for p in procedures)
+            'procedures': ', '.join(p.name for p in procedures),
+            'owner_id': owner_id,
         }
         table_data.append(appointment_data)
     return render_template('calendar.html',
@@ -81,27 +81,6 @@ def calendar():
                            animals=animal_data)
 
 
-@app.route('/get-patient-info', methods=['POST'])
-def get_patient_info():
-    data = request.get_json()
-    pesel = data['pesel']
-
-    if pesel == '123':
-        patient = {
-            'name': 'John Doe',
-            'age': 35,
-            'address': '123 Main Street'
-        }
-
-        return jsonify({'patient': patient})
-    patient = {
-        'name': 'Tajemniczy bebzol',
-        'age': 35,
-        'address': '123 Main Street'
-    }
-    return jsonify({'patient': patient})
-
-
 @app.route('/send-appointments')
 def send_appointments_data_to_calendar():
     appointments = get_all_appointments()
@@ -110,7 +89,7 @@ def send_appointments_data_to_calendar():
     for appointment in appointments:
         appointment_datetime = datetime.combine(
             appointment.date, appointment.time)
-        animal_name, animal_species, owner_name, owner_surname, vet_name, vet_surname, room_number = get_appointment_details(
+        animal_name, animal_species, owner_name, owner_surname, owner_id, vet_name, vet_surname, room_number = get_appointment_details(
             appointment)
         calendar_tile = {
             'title': f"{animal_name} ({owner_surname}) \n dr. {vet_name} {vet_surname} \n Sala {room_number}",
@@ -126,9 +105,10 @@ def send_appointments_data_to_calendar():
 def get_appointment_details(appointment):
     animal = get_animal_by_id(appointment.animal_id)
     owner = get_owner_by_id(animal.owner_id)
-    vet = get_employee_by_id(appointment.vet_id)
+    vet = get_vet_by_id(appointment.vet_id)
+    vet_employee = get_employee_by_id(vet.employee_id)
     room = get_room_by_id(appointment.room_id)
-    return animal.name, animal.species, owner.name, owner.surname, vet.name, vet.surname, room.room_number
+    return animal.name, animal.species, owner.name, owner.surname, owner.owner_id, vet_employee.name, vet_employee.surname, room.room_number
 
 
 @app.route('/add-appointment', methods=['POST'])
@@ -138,40 +118,94 @@ def add_appointment_route():
     doctor_id = request.form.get('doctor')
     room_id = request.form.get('room')
     animal_id = request.form.get('animal')
-    procedure_id = request.form.get('procedure')
-
+    selected_procedures = request.form.getlist('treatments')
+    procedure_ids = [int(procedure_id) for procedure_id in selected_procedures]
+    if not procedure_ids:
+        flash('Wystąpił błąd. Nie wybrano żadnego zabiegu.', 'error')
+        return redirect('/calendar')
+    if not date or not time or not doctor_id or not room_id or not animal_id:
+        flash('Wystąpił błąd. Nie wypełniono wszystkich pól.', 'error')
+        return redirect('/calendar')
     try:
         add_appointment(doctor_id, room_id, animal_id, date, time)
-        add_procedure_to_appointment(
-            get_latest_appointment().appointment_id, procedure_id)
+        for procedure_id in procedure_ids:
+            add_procedure_to_appointment(get_latest_appointment().appointment_id, procedure_id)
         flash('Wizyta została dodana pomyślnie.', 'success')
     except OperationalError as e:
         error_message = str(e)
         if 'Vet is not available at that time' in error_message:
             flash('Wystąpił błąd. Lekarz nie jest dostępny o podanej godzinie.', 'error')
+        elif 'Room is not available at that time' in error_message:
+            flash('Wystąpił błąd. Sala nie jest dostępna o podanej godzinie.', 'error')
         else:
             flash('Wystąpił błąd podczas dodawania wizyty. Spróbuj ponownie.', 'error')
     return redirect('/calendar')
 
 
-@app.route('/remove-appointment', methods=['POST'])
-def remove_appointment():
-    data = request.get_json()  # Odczytaj dane z ciała żądania jako JSON
-    appointment_id = data.get('id')  # Pobierz ID wizyty z danych JSON
-    # Dodaj kod usuwający wizytę o podanym ID z bazy danych lub innej struktury danych
+@app.route('/delete_appointment/<appointment_id>', methods=['POST'])
+def delete_appointment_route(appointment_id):
     try:
-        if get_latest_appointment().appointment_id < int(appointment_id):
-            raise ValueError
         delete_appointment(appointment_id)
-        # Zwróć odpowiedź potwierdzającą usunięcie wizyty
-        return f'Wizyta o ID {appointment_id} została pomyślnie usunięta.'
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
+        flash(f'Wizyta o id {appointment_id} została usunięta pomyślnie.', 'success')
+    except IntegrityError:
+        flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
+    except OperationalError:
+        flash(f'Wystąpił błąd podczas usuwania wizyty o id {appointment_id}. Spróbuj ponownie.', 'error')
+    return redirect('/calendar')
+
+
+@app.route('/postpone_appointment/<appointment_id>', methods=['POST'])
+def postpone_appointment_route(appointment_id):
+    new_day = request.form['new_day']
+    start_hour = request.form['start_hour']
+    if start_hour < '09:00' or start_hour > '19:00':
+        flash('Nie można umówić wizyty. Godziny pracy kliniki to 9:00 - 19:00', 'error')
+        return redirect('/calendar')
+    try:
+        update_appointments_date_time(appointment_id, new_day, start_hour)
+        flash(f"Wizyta o id {appointment_id} została przełożona. Nowa data: {start_hour} {new_day}", "success")
+    except OperationalError as e:
+        error_message = str(e)
+        if 'Vet is not available at that time' in error_message:
+            flash('Lekarz nie jest dostępny o podanej godzinie. Usuń wizytę i dodaj ją na nowo, wybierając innego lekarza.', 'error')
+        elif 'Cannot update appointment. No available room.' in error_message:
+            flash('Żadna z sal nie jest dostępna. Wybierz inny termin.', 'error')
+        else:
+            flash(f"Wystąpił błąd podczas przekładania wizyty. Usuń wizytę i dodaj ją na nowo.", "error")
+    return redirect('/calendar')
 
 
 @app.route('/schedule')
 def schedule():
-    return render_template('schedule.html')
+    doctors_data = []
+    for vet in get_all_vets():
+        vet_employee = get_employee_by_id(vet.employee_id)
+        doctors_data.append({
+            'employee_id': vet_employee.employee_id,
+            'name': vet_employee.name,
+            'surname': vet_employee.surname,
+            'spec': vet.specialization,
+        })
+    return render_template('schedule.html', doctors=doctors_data)
+
+
+@app.route('/get_schedule', methods=['POST', 'GET'])
+def get_schedule():
+    if request.method == 'POST':
+        employee_id = int(request.form.get('doctor_dropdown'))
+        employee_schedule = get_employee_schedule(get_employee_by_id(employee_id))
+        events = []
+        for schedule in employee_schedule:
+            event = {
+                'title': 'Praca',
+                'daysOfWeek': schedule.week_day,
+                'startTime': schedule.hour_start.isoformat(),
+                'endTime': schedule.hour_end.isoformat(),
+            }
+            events.append(event)
+
+        return jsonify(events)
+    return redirect('/schedule')
 
 
 @app.route('/payments')

@@ -1,8 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="{{ category }}-flash">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+
 <div class="container">
 <h1>Profil Właściciela: {{ owner.name }} {{ owner.surname }}</h1>
+<div class="row search-add">
+    <div class="add-user">
+        <button class="btn btn-success btn-block button-personalized" type="button" data-toggle="modal" data-target="#add-animal-form">Dodaj zwierzę</button>
+    </div>
+</div>
     <div class="row flex-lg-nowrap">
         <table>
             <thead>
@@ -12,6 +24,7 @@
                     <th>Gatunek</th>
                     <th>Płeć</th>
                     <th>Data Urodzenia</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -28,6 +41,10 @@
                                 <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#edit-owner-form">Edytuj</button>
                                 <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" data-id="{{ animal.animal_id }}"><img class='trashy' src="../static/css/trash.png"></button>
                             </div>
+                        </td>
+                        <td class="text-center align-middle">
+
+                            <button class="btn btn-sm badge" type="button" data-toggle="modal" data-target="#disease_history" data-pesel="{{ animal.animal_id }}"><img class='document' src="../static/css/document.png"></button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -57,6 +74,134 @@
     </div>
 </div>
 
+
+<!-- edit animal form -->
+<div class="modal fade" role="dialog" tabindex="-1" id="edit-animal-form"> 
+    <div class="py-1">       
+      <div class="modal-dialog modal-lg" role="document">
+          <div class = 'modal-content'>
+              <div class="modal-header">
+                  <h5>Edytuj zwierzę</h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                      <span aria-hidden="true">×</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+              <form class="form" novalidate="" id="edit-form" action="/edit_animal/{{ animal_id }}" method="POST">
+                  <div class="form-group">
+                      <label for="name">Imię:</label>
+                      <input type="text" name="name" id="edit_name" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                      <label for="type">Rodzaj:</label>
+                      <input type="text" name="type" id="edit_type" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                    <label for="species">Gatunek:</label>
+                    <input type="text" name="species" id="edit_species" required placeholder="...">
+                  </div>
+                  <div class="form-group">
+                    <label for="gender">Płeć:</label>
+                    <select class="select" name="gender" id="edit_gender">
+                          <option value="male">Samiec</option>
+                          <option value="female">Samica</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="birthdate">Data Urodzenia:</label>
+                    <input type="date" name="birthdate" id="edit_birthdate" required placeholder="...">
+                  </div>
+                  <button class="btn btn-success btn-block" type="submit" id="submit-edit">Potwierdź</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- add animal form -->
+<div class="modal fade" role="dialog" tabindex="-1" id="add-animal-form"> 
+    <div class="py-1">       
+      <div class="modal-dialog modal-lg" role="document">
+          <div class = 'modal-content'>
+              <div class="modal-header">
+                  <h5>Dodaj nowe zwierzę</h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                      <span aria-hidden="true">×</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <form class="form" novalidate="" id="add-form" action="/add_animal" method="POST">
+                    <div class="form-group">
+                        <label for="name">Imię:</label>
+                        <input type="text" name="name" id="edit_name" required placeholder="...">
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Rodzaj:</label>
+                        <input type="text" name="type" id="edit_type" required placeholder="...">
+                    </div>
+                    <div class="form-group">
+                      <label for="species">Gatunek:</label>
+                      <input type="text" name="species" id="edit_species" required placeholder="...">
+                    </div>
+                    <div class="form-group">
+                      <label for="gender">Płeć:</label>
+                      <select class="select" name="gender" id="edit_gender">
+                            <option value="male">Samiec</option>
+                            <option value="female">Samica</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="birthdate">Data Urodzenia:</label>
+                      <input type="date" name="birthdate" id="edit_birthdate" required placeholder="...">
+                    </div>
+                    <button class="btn btn-success btn-block" type="submit" id="submit-edit">Potwierdź</button>
+                    </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- disease_history -->
+<div class="modal fade" role="dialog" tabindex="-1" id="disease_history"> 
+    <div class="py-1">       
+      <div class="modal-dialog modal-lg" role="document">
+          <div class = 'modal-content'>
+              <div class="modal-header">
+                  <h5>Historia chorób</h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                      <span aria-hidden="true">×</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Choroba</th>
+                            <th>Data diagnozy</th>
+                            <th>Data powrotu do zdrowia</th>
+                            <th>Opis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for disease in diseases %}
+                            <tr>
+                                <td>{{ disease.name }}</td>
+                                <td>{{ disease.diagnosis_date }}</td>
+                                <td>{{ disease.recovery_date }}</td>
+                                <td>{{ disease.description }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
@@ -71,4 +216,5 @@
         });
     });
 </script>
+
 {% endblock %}

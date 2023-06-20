@@ -15,10 +15,10 @@ Moduł zarządzania zaopatrzeniem będzie odpowiadał za kontrolę stanu i iloś
 System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na łatwe i szybkie korzystanie z niego z dowolnego miejsca i urządzenia.
 
 # Model ER
-![klinika weterynaryjna model er](database models/klinika_weterynaryjna-model_ER.png)
+![klinika weterynaryjna model er](database_models/klinika_weterynaryjna-model_ER.png)
 
 # Model logiczny
-![klinika weterynaryjna model logiczny](database models/klinika_weterynaryjna-model_logiczny.png)
+![klinika weterynaryjna model logiczny](database_models/klinika_weterynaryjna-model_logiczny.png)
 
 # Wstępne założenia projektowe:
 

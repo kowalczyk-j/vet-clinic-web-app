@@ -1,7 +1,73 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Treść strony -->
-<h1>Strona Harmonogram</h1>
-<!-- Dodatkowe elementy na stronie -->
+
+<body>
+
+<div class="doctor-drop-container">
+    <form action="{{ url_for('get_schedule') }}" method="POST">
+        <select name="doctor_dropdown" required class="custom-dropdown" onchange="this.form.submit()">
+            <option value="" selected disabled hidden>Wybierz lekarza</option>
+            {% for doctor in doctors %}
+                <option value="{{ doctor['employee_id'] }}">{{ 'dr. ' + doctor['name'] + ' ' + doctor['surname'] + ' (' + doctor['spec'] + ')'  }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+    
+<div id='calendar'></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        allDaySlot: false,
+        locale: 'pl',
+        initialView: 'timeGridWeek',
+        headerToolbar: {
+            left: 'prev,next,today',
+            center: 'title',
+            right: 'timeGridWeek,timeGridDay',
+        },
+        contentHeight: 'auto',
+        events: {
+            url: '/get_schedule',
+            method: 'POST',
+            extraParams: {
+                doctor_dropdown: function() {
+                    return document.querySelector('select[name="doctor_dropdown"]').value;
+                }
+            },
+            success: function(response) {
+                var events = response.map(function(event) {
+                    return {
+                        title: event.title,
+                        daysOfWeek: event.daysOfWeek,
+                        startTime: event.startTime,
+                        endTime: event.endTime
+                    };
+                });
+                return events;
+            },
+            failure: function() {
+                alert('Błąd pobierania harmonogramu pracownika.');
+            }
+        },
+        hiddenDays: [0],
+            buttonText: {
+                today: 'Dzisiaj',
+                week: 'Tydzień',
+                day: 'Dzień',
+            },
+        slotMinTime: '09:00',
+        slotMaxTime: '19:00',
+    });
+
+    calendar.render();
+});
+</script>
+
+</body>
+
 {% endblock %}

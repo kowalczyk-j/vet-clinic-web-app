@@ -236,6 +236,11 @@ def delete_appointment(appointment_id):
     execute_statement(stmt)
 
 
+def update_appointments_date_time(appointment_id, date, time):
+    stmt = update(appointment).where(appointment.c.appointment_id == appointment_id).values(date=date, time=time)
+    execute_statement(stmt)
+
+
 def add_procedure_to_appointment(appointment_id, procedure_id):
     stmt = insert(procedure_appointment).values(
         appointment_id=appointment_id, procedure_id=procedure_id)
@@ -324,5 +329,5 @@ def update_payment(payment_id, method_id):
 
 # ----------- PROCEDURES -----------
 def get_all_procedures():
-    stmt = select(medical_procedure)
+    stmt = select(medical_procedure).order_by(medical_procedure.c.name)
     return execute_statement(stmt).all()
