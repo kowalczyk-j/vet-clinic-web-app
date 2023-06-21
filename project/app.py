@@ -336,6 +336,7 @@ def add_animal_route():
 @app.route('/delete_animal/<animal_id>', methods=['POST'])
 def delete_animal_route(animal_id):
     delete_animal(animal_id)
+    flash("Poprawnie usunięto zwierzę i jego dane z bazy.", "success")
     return redirect(request.referrer)
 
 
