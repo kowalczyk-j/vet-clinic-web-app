@@ -9,7 +9,6 @@
     <button onclick="closeDialog()">X</button>
 </div>
 
-
 <script>
 
 
@@ -64,8 +63,18 @@
             events: {
                 url : '/send-appointments',
                 method : 'GET',
+ 
+                },
+            hiddenDays: [0],
+            buttonText: {
+                today: 'Dziś',
+                month: 'Miesiąc',
+                week: 'Tydzień',
+                day: 'Dzień',
             },
-
+            slotMinTime: '09:00',
+            slotMaxTime: '19:00',
+            slotDuration: '00:15:00',
         });
         
         calendar.render();

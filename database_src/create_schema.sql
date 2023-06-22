@@ -18,7 +18,6 @@ CREATE TABLE animal (
   owner_id INT,
   name VARCHAR(50) NOT NULL,
   species VARCHAR(50) NOT NULL,
-#   SHOULD BE NEW ENTITY WITH SPECIES
   type VARCHAR(50),
   gender CHAR(1) CONSTRAINT gender_check CHECK (gender IN ('F', 'M')),
   birthdate DATE,
