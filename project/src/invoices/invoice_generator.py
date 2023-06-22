@@ -7,8 +7,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from datetime import datetime
 
-pdfmetrics.registerFont(TTFont('FreeSans', "FreeSans.ttf"))
-pdfmetrics.registerFont(TTFont('FreeSansBold', "FreeSansBold.ttf"))
+#pdfmetrics.registerFont(TTFont('FreeSans', "FreeSans.ttf"))
+#pdfmetrics.registerFont(TTFont('FreeSansBold', "FreeSansBold.ttf"))
 
 
 def generate_unique_invoice_number():

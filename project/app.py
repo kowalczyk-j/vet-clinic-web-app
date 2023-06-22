@@ -103,15 +103,14 @@ def send_appointments_data_to_calendar():
     return jsonify(calendar_data)
 
 
-events = []  
+events = []
+
 
 @app.route('/get_schedule', methods=['POST', 'GET'])
-
 def get_schedule():
     weekdays = ['Pon', 'Wt', '\u015ar', 'Czw', 'Pt', 'Sob', 'Ni']
     weekday_numbers = ['0', '1', '2', '3', '4', '5', '6']
     days = dict(zip(weekdays, weekday_numbers))
-
 
     if request.method == 'POST':
         events.clear()
@@ -119,7 +118,7 @@ def get_schedule():
         employee_schedule = get_employee_schedule(get_employee_by_id(employee_id))
         for schedule in employee_schedule:
             event = {
-                'title': 'Praca',
+                'title': f'dr. {get_employee_by_id(employee_id).name} {get_employee_by_id(employee_id).surname}',
                 'daysOfWeek': days[schedule.week_day],
                 'startTime': schedule.hour_start.isoformat(),
                 'endTime': schedule.hour_end.isoformat(),
@@ -128,10 +127,9 @@ def get_schedule():
         return redirect('/schedule')
 
     if request.method == 'GET':
-        print(events)
         return jsonify(events)
 
-    
+
 @app.route('/schedule')
 def schedule():
     doctors_data = []
@@ -144,6 +142,7 @@ def schedule():
             'spec': vet.specialization,
         })
     return render_template('schedule.html', doctors=doctors_data)
+
 
 def get_appointment_details(appointment):
     animal = get_animal_by_id(appointment.animal_id)
@@ -210,13 +209,14 @@ def postpone_appointment_route(appointment_id):
     except OperationalError as e:
         error_message = str(e)
         if 'Vet is not available at that time' in error_message:
-            flash('Lekarz nie jest dostępny o podanej godzinie. Usuń wizytę i dodaj ją na nowo, wybierając innego lekarza.', 'error')
+            flash(
+                'Lekarz nie jest dostępny o podanej godzinie. Usuń wizytę i dodaj ją na nowo, wybierając innego lekarza.',
+                'error')
         elif 'Cannot update appointment. No available room.' in error_message:
             flash('Żadna z sal nie jest dostępna. Wybierz inny termin.', 'error')
         else:
             flash(f"Wystąpił błąd podczas przekładania wizyty. Usuń wizytę i dodaj ją na nowo.", "error")
     return redirect('/calendar')
-
 
 
 @app.route('/payments')
