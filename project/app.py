@@ -101,6 +101,48 @@ def send_appointments_data_to_calendar():
     return jsonify(calendar_data)
 
 
+events = []  
+
+@app.route('/get_schedule', methods=['POST', 'GET'])
+
+def get_schedule():
+    weekdays = ['Pon', 'Wt', '\u015ar', 'Czw', 'Pt', 'Sob', 'Ni']
+    weekday_numbers = ['0', '1', '2', '3', '4', '5', '6']
+    days = dict(zip(weekdays, weekday_numbers))
+
+
+    if request.method == 'POST':
+        events.clear()
+        employee_id = int(request.form.get('doctor_dropdown'))
+        employee_schedule = get_employee_schedule(get_employee_by_id(employee_id))
+        for schedule in employee_schedule:
+            event = {
+                'title': 'Praca',
+                'daysOfWeek': days[schedule.week_day],
+                'startTime': schedule.hour_start.isoformat(),
+                'endTime': schedule.hour_end.isoformat(),
+            }
+            events.append(event)
+        return redirect('/schedule')
+
+    if request.method == 'GET':
+        print(events)
+        return jsonify(events)
+
+    
+@app.route('/schedule')
+def schedule():
+    doctors_data = []
+    for vet in get_all_vets():
+        vet_employee = get_employee_by_id(vet.employee_id)
+        doctors_data.append({
+            'employee_id': vet_employee.employee_id,
+            'name': vet_employee.name,
+            'surname': vet_employee.surname,
+            'spec': vet.specialization,
+        })
+    return render_template('schedule.html', doctors=doctors_data)
+
 def get_appointment_details(appointment):
     animal = get_animal_by_id(appointment.animal_id)
     owner = get_owner_by_id(animal.owner_id)
@@ -163,36 +205,8 @@ def postpone_appointment_route(appointment_id):
     return redirect('/calendar')
 
 
-@app.route('/schedule')
-def schedule():
-    doctors_data = []
-    for vet in get_all_vets():
-        vet_employee = get_employee_by_id(vet.employee_id)
-        doctors_data.append({
-            'employee_id': vet_employee.employee_id,
-            'name': vet_employee.name,
-            'surname': vet_employee.surname,
-            'spec': vet.specialization,
-        })
-    return render_template('schedule.html', doctors=doctors_data)
 
-@app.route('/get_schedule', methods=['POST', 'GET'])
-def get_schedule():
-    if request.method == 'POST':
-        employee_id = int(request.form.get('doctor_dropdown'))
-        employee_schedule = get_employee_schedule(get_employee_by_id(employee_id))
-        events = []
-        for schedule in employee_schedule:
-            event = {
-                'title': 'Praca',
-                'daysOfWeek': schedule.week_day,
-                'startTime': schedule.hour_start.isoformat(),
-                'endTime': schedule.hour_end.isoformat(),
-            }
-            events.append(event)
 
-        return jsonify(events)
-    return redirect('/schedule')
 
 @app.route('/payments')
 def payments():
