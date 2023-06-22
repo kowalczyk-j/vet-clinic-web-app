@@ -26,14 +26,14 @@
         locale: 'pl',
         initialView: 'timeGridWeek',
         headerToolbar: {
-            left: 'prev,next,today',
+            left: 'prev,next',
             center: 'title',
             right: 'timeGridWeek,timeGridDay',
         },
         contentHeight: 'auto',
         events: {
             url: '/get_schedule',
-            method: 'POST',
+            method: 'GET',
             extraParams: {
                 doctor_dropdown: function() {
                     return document.querySelector('select[name="doctor_dropdown"]').value;
@@ -45,10 +45,10 @@
                         title: event.title,
                         daysOfWeek: event.daysOfWeek,
                         startTime: event.startTime,
-                        endTime: event.endTime
+                        endTime: event.endTime,
                     };
                 });
-                return events;
+                calendar.setOption('events', events);
             },
             failure: function() {
                 alert('Błąd pobierania harmonogramu pracownika.');
@@ -56,7 +56,6 @@
         },
         hiddenDays: [0],
             buttonText: {
-                today: 'Dzisiaj',
                 week: 'Tydzień',
                 day: 'Dzień',
             },

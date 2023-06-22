@@ -193,3 +193,26 @@ body {
 .checkbox input[type="checkbox"] {
   margin-right: 5px;
 }
+
+
+#custom-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #f9f9f9;
+  z-index: 9999; 
+}
+
+
+.title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.content {
+  margin-bottom: 10px;
+}
