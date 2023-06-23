@@ -27,16 +27,17 @@
                 <button class="btn btn-sm btn-outline-secondary badge delete-btn" style="margin-left: 2em; margin-bottom: 1em" type="button" data-toggle="modal" data-target="#confirmation" data-id="{{ animal.animal_id }}"><img class='trashy' src="../static/css/trash.png"></button>
             </div>
             <p>{{ animal.species }} {{ animal.type }},  ur. {{ animal.birthdate }}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Choroba</th>
+                        <th>Data diagnozy</th>
+                        <th>Data powrotu do zdrowia</th>
+                        <th>Opis</th>
+                    </tr>
+                </thead>
             {% for disease in diseases[animal.animal_id] %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Choroba</th>
-                            <th>Data diagnozy</th>
-                            <th>Data powrotu do zdrowia</th>
-                            <th>Opis</th>
-                        </tr>
-                    </thead>
+                
                     <tbody>
                         <tr>
                             <td>{{ disease.name }}</td>
@@ -45,8 +46,9 @@
                             <td>{{ disease.description }}</td>
                         </tr>
                     </tbody>
-                </table>
+                
             {% endfor %}
+            </table>
             <hr/>
         {% endfor %}
     </div>
