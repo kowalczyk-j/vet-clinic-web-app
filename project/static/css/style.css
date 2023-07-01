@@ -5,9 +5,8 @@ body {
     height: 100vh;
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
-    background-image: url('green.jpg');
-    background-size: cover;
-    background-repeat: repeat-y;
+    background-image: url('vetcare_background.jpg');
+    background-repeat: repeat;
     background-position: center;
 }
 
