@@ -231,33 +231,11 @@ def process_payment(payment_id, method_id, invoice):
     flash_message = "Opłacono wizytę "
     update_payment(payment_id, method_id)
     if invoice == "1":
-        invoice_data = get_invoice_data(payment_id)
+        invoice_data = get_invoice_from_payment(payment_id)
         generate_invoice_pdf(invoice_data)
         flash_message += "oraz pobrano fakturę"
     flash(flash_message, "success")
     return redirect("/payments")
-
-
-def get_invoice_data(payment_id):
-    raw_data = get_invoice_from_payment(payment_id)
-    invoice_data = {
-        "nabywca": {
-            "imie_nazwisko": f"{raw_data.name} {raw_data.surname}",
-            "adres": raw_data.address,
-        },
-        "data_sprzedazy": raw_data.date,
-        "data_oplaty": raw_data.date_paid,
-        "sposob_platnosci": raw_data.method_of_payment,
-        "pozycje": [
-            {
-                "opis": "Konsultacja weterynaryjna",
-                "ilosc": 1,
-                "cena_brutto": float(raw_data.amount),
-                "wartosc": float(raw_data.amount),
-            }
-        ],
-    }
-    return invoice_data
 
 
 @app.route('/patients')

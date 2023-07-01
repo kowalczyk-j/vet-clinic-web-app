@@ -60,20 +60,19 @@ def get_company_info():
     ]
 
 
-def get_items_and_total_cost(invoice_data, vat_rate=8):
+def get_items_and_total_cost(invoice_items, vat_rate=8):
     total_cost = 0
-    items = invoice_data['pozycje']
     table_headers = ['Lp.', 'Nazwa towaru', 'VAT', 'Ilość', 'Cena netto', 'Cena brutto', 'Razem']
     item_data = [table_headers]
-    for i, item in enumerate(items, start=1):
-        item_cost = item['cena_brutto'] * item['ilosc']
+    for i, item in enumerate(invoice_items, start=1):
+        item_cost = item['price_brutto'] * item['quantity']
         item_row = [
             str(i),
-            item['opis'],
+            item['name'],
             f"{vat_rate}%",
-            str(item['ilosc']),
-            f"{(item['cena_brutto'] / (1 + vat_rate * 0.01)):.2f} PLN".replace(".", ","),
-            f"{item['cena_brutto']:.2f} PLN".replace(".", ","),
+            str(item['quantity']),
+            f"{(item['price_brutto'] / (1 + vat_rate * 0.01)):.2f} PLN".replace(".", ","),
+            f"{item['price_brutto']:.2f} PLN".replace(".", ","),
             f"{item_cost:.2f} PLN".replace(".", ","),
         ]
         total_cost += item_cost
@@ -95,20 +94,30 @@ def prepare_invoice_content(invoice_data, invoice_number):
 
     # Dane nabywcy
     content.append(Paragraph("Dane nabywcy:", heading_style))
-    content.append(Paragraph(f"Imię i nazwisko: {invoice_data['nabywca']['imie_nazwisko']}", normal_style))
-    content.append(Paragraph(f"Adres: {invoice_data['nabywca']['adres']} \n POL", normal_style))
+    content.append(Paragraph(f"Imię i nazwisko: {invoice_data.name} {invoice_data.surname}",
+                             normal_style))
+    content.append(Paragraph(f"Adres: {invoice_data.address} \n POL", normal_style))
     content.append(Paragraph("NIP: BRAK", normal_style))
     content.append(Spacer(1, 20))
 
     # Informacje dodatkowe
-    content.append(Paragraph(f"Data sprzedaży: {invoice_data['data_sprzedazy']}", normal_style))
-    content.append(Paragraph(f"Data płatności: {invoice_data['data_oplaty']}", normal_style))
-    content.append(Paragraph(f"Sposób płatności: {invoice_data['sposob_platnosci']}", normal_style))
+    content.append(Paragraph(f"Data sprzedaży: {invoice_data.date}", normal_style))
+    content.append(Paragraph(f"Data płatności: {invoice_data.date_paid}", normal_style))
+    content.append(Paragraph(f"Sposób płatności: {invoice_data.method_of_payment}", normal_style))
     content.append(Spacer(1, 20))
 
     # Pozycje faktury
     content.append(Paragraph("Pozycje faktury:", heading_style))
-    items_data, total_cost = get_items_and_total_cost(invoice_data)
+    # Ze względu na brak danych o cenach poszczególnych usług, zakładam, że faktura dotyczy jednej ogólnej pozycji,
+    # a cena za wizytę ustalana jest indywidualnie przez lekarza
+    invoice_items = [
+            {
+                "name": "Konsultacja weterynaryjna",
+                "quantity": 1,
+                "price_brutto": float(invoice_data.amount),
+            }
+        ]
+    items_data, total_cost = get_items_and_total_cost(invoice_items)
     item_table = Table(items_data, colWidths=[20 * mm, None, 20 * mm, 20 * mm, 30 * mm, 30 * mm, 30 * mm])
     item_table.setStyle(table_style)
     content.append(item_table)
