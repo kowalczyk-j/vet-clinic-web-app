@@ -108,7 +108,7 @@ events = []
 
 @app.route('/get_schedule', methods=['POST', 'GET'])
 def get_schedule():
-    weekdays = ['Pon', 'Wt', '\u015ar', 'Czw', 'Pt', 'Sob', 'Ni']
+    weekdays = ['Ni', 'Pon', 'Wt', '\u015ar', 'Czw', 'Pt', 'Sob']
     weekday_numbers = ['0', '1', '2', '3', '4', '5', '6']
     days = dict(zip(weekdays, weekday_numbers))
 
