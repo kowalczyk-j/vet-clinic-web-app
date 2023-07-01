@@ -1,3 +1,6 @@
+import os
+import webbrowser
+
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -7,8 +10,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from datetime import datetime
 
-pdfmetrics.registerFont(TTFont('FreeSansBold', 'src/invoices/FreeSansBold.ttf'))
-pdfmetrics.registerFont(TTFont('FreeSans', 'src/invoices/FreeSans.ttf'))
+pdfmetrics.registerFont(TTFont('FreeSansBold', 'src/invoices/fonts/FreeSansBold.ttf'))
+pdfmetrics.registerFont(TTFont('FreeSans', 'src/invoices/fonts/FreeSans.ttf'))
 
 
 def generate_unique_invoice_number():
@@ -130,8 +133,10 @@ def prepare_invoice_content(invoice_data, invoice_number):
     return content
 
 
-def generate_invoice_pdf(invoice_data):
+def generate_invoice_pdf(invoice_data, output_dir="./src/invoices"):
     invoice_number = generate_unique_invoice_number()
-    pdf = SimpleDocTemplate(f"Faktura_{invoice_number}.pdf", pagesize=A4)
+    output_path = os.path.join(output_dir, f"Faktura_{invoice_number}.pdf")
+    pdf = SimpleDocTemplate(output_path, pagesize=A4)
     content = prepare_invoice_content(invoice_data, invoice_number)
     pdf.build(content)
+    webbrowser.open(output_path)
