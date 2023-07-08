@@ -1,10 +1,12 @@
+from datetime import datetime
+
 from flask import Flask, render_template, request, jsonify, redirect, flash
 from sqlalchemy.exc import IntegrityError, OperationalError
-from datetime import datetime
+
 from src.data_access import get_owner_by_id, get_all_owners, add_owner, update_owner, delete_owner, \
     get_all_appointments, get_employee_by_id, get_animal_by_id, get_room_by_id, add_appointment, \
     get_procedures_with_appointment, delete_appointment, get_all_vets, get_all_rooms, \
-    get_owners_animals, get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
+    get_all_procedures, get_latest_appointment, add_procedure_to_appointment, \
     get_pending_payments, get_payments_history, update_payment, get_owners_animals, delete_animal, \
     get_invoice_from_payment, update_appointments_date_time, get_employee_schedule, get_vet_by_id, \
     add_animal, get_animal_disease_history
@@ -22,47 +24,39 @@ def home():
 def calendar():
     appointments = get_all_appointments()
 
-    doctors_data = []
-    for vet in get_all_vets():
-        vet_employee = get_employee_by_id(vet.employee_id)
-        doctors_data.append({
-            'vet_id': vet.vet_id,
-            'name': vet_employee.name,
-            'surname': vet_employee.surname,
-            'spec': vet.specialization,
-        })
-    rooms_data = []
-    for room in get_all_rooms():
-        rooms_data.append({
-            'room_id': room.room_id,
-            'room_number': room.room_number,
-            'type': room.room_type,
-        })
+    doctors_data = [{
+        'vet_id': vet.vet_id,
+        'name': get_employee_by_id(vet.employee_id).name,
+        'surname': get_employee_by_id(vet.employee_id).surname,
+        'spec': vet.specialization,
+    } for vet in get_all_vets()]
 
-    animal_data = []
-    for owner in get_all_owners():
-        for animal in get_owners_animals(owner):
-            animal_data.append({
-                'animal_id': animal.animal_id,
-                'name': animal.name,
-                'species': animal.species,
-                'owner_name': owner.name,
-                'owner_surname': owner.surname,
-            })
+    rooms_data = [{
+        'room_id': room.room_id,
+        'room_number': room.room_number,
+        'type': room.room_type,
+    } for room in get_all_rooms()]
 
-    treatment_data = []
-    for procedure in get_all_procedures():
-        treatment_data.append({
-            'procedure_id': procedure.procedure_id,
-            'name': procedure.name,
-        })
+    animal_data = [{
+        'animal_id': animal.animal_id,
+        'name': animal.name,
+        'species': animal.species,
+        'owner_name': owner.name,
+        'owner_surname': owner.surname,
+    } for owner in get_all_owners() for animal in get_owners_animals(owner)]
+
+    treatment_data = [{
+        'procedure_id': procedure.procedure_id,
+        'name': procedure.name,
+    } for procedure in get_all_procedures()]
 
     table_data = []
 
     for appointment in appointments:
-        animal_name, animal_species, owner_name, owner_surname, owner_id, vet_name, vet_surname, room_number = get_appointment_details(
-            appointment)
+        animal_name, animal_species, owner_name, owner_surname, owner_id, vet_name,\
+            vet_surname, room_number = get_appointment_details(appointment)
         procedures = get_procedures_with_appointment(appointment)
+        procedures_names = ', '.join(p.name for p in procedures)
         appointment_data = {
             'id': appointment.appointment_id,
             'date': appointment.date,
@@ -70,7 +64,7 @@ def calendar():
             'doctor': f"{vet_name} {vet_surname}",
             'room': room_number,
             'animal': f"{animal_species} {animal_name} (Właściciel: {owner_name} {owner_surname})",
-            'procedures': ', '.join(p.name for p in procedures),
+            'procedures': procedures_names,
             'owner_id': owner_id,
         }
         table_data.append(appointment_data)
@@ -88,10 +82,9 @@ def send_appointments_data_to_calendar():
     calendar_data = []
 
     for appointment in appointments:
-        appointment_datetime = datetime.combine(
-            appointment.date, appointment.time)
-        animal_name, animal_species, owner_name, owner_surname, owner_id, vet_name, vet_surname, room_number = get_appointment_details(
-            appointment)
+        appointment_datetime = datetime.combine(appointment.date, appointment.time)
+        animal_name, animal_species, owner_name, owner_surname, owner_id, vet_name,\
+            vet_surname, room_number = get_appointment_details(appointment)
         calendar_tile = {
             'title': f"{animal_name} ({owner_surname}) \n dr. {vet_name} {vet_surname} \n Sala {room_number}",
             'start': appointment_datetime.isoformat(),
@@ -101,6 +94,16 @@ def send_appointments_data_to_calendar():
         calendar_data.append(calendar_tile)
 
     return jsonify(calendar_data)
+
+
+def get_appointment_details(appointment):
+    animal = get_animal_by_id(appointment.animal_id)
+    owner = get_owner_by_id(animal.owner_id)
+    vet = get_vet_by_id(appointment.vet_id)
+    vet_employee = get_employee_by_id(vet.employee_id)
+    room = get_room_by_id(appointment.room_id)
+    return animal.name, animal.species, owner.name, owner.surname, owner.owner_id, \
+        vet_employee.name, vet_employee.surname, room.room_number
 
 
 events = []
@@ -142,15 +145,6 @@ def schedule():
             'spec': vet.specialization,
         })
     return render_template('schedule.html', doctors=doctors_data)
-
-
-def get_appointment_details(appointment):
-    animal = get_animal_by_id(appointment.animal_id)
-    owner = get_owner_by_id(animal.owner_id)
-    vet = get_vet_by_id(appointment.vet_id)
-    vet_employee = get_employee_by_id(vet.employee_id)
-    room = get_room_by_id(appointment.room_id)
-    return animal.name, animal.species, owner.name, owner.surname, owner.owner_id, vet_employee.name, vet_employee.surname, room.room_number
 
 
 @app.route('/add-appointment', methods=['POST'])
@@ -267,11 +261,11 @@ def add_owner_route():
     pesel = request.form['pesel']
     if (not name or not surname or not street or not postal_code
             or not city or not phone_number or not pesel):
-        flash('Wystąpił błąd. Proszę wypełnić wszystkie pola.', 'error')
+        flash('Wystąpił błąd. Proszę wypełnić wszystkie pola.', "error")
     else:
         try:
             add_owner(name, surname, address, phone_number, pesel)
-            flash("Poprawnie zarejestrowano klienta!", "success")
+            flash("Poprawnie zarejestrowano nowego klienta", "success")
         except IntegrityError:
             flash("Wystąpił błąd. Podany numer pesel jest już zarejestrowany \
                    w bazie danych.", "error")
@@ -291,13 +285,17 @@ def edit_owner_route(pesel):
         flash("Wystąpił błąd. Nie podano danych do edycji.", "error")
     else:
         update_owner(pesel, **args_dict)
-        flash("Dane właściciela zostały zmienione.")
+        flash("Dane właściciela zostały zmienione.", "success")
     return redirect('/patients')
 
 
 @app.route('/delete_owner/<pesel>', methods=['POST'])
 def delete_owner_route(pesel):
-    delete_owner(pesel)
+    try:
+        delete_owner(pesel)
+        flash("Właściciel i wszystkie powiązane z nim dane zostały pomyślnie usunięte.", "success")
+    except IntegrityError:
+        flash("Wystąpił błąd. Nie można usunąć właściciela.", "error")
     return redirect('/patients')
 
 
@@ -329,5 +327,5 @@ def delete_animal_route(animal_id):
 
 
 if __name__ == '__main__':
-    app.secret_key = "rootpasswd"
+    app.secret_key = "NF83nd9sD"
     app.run(debug=True)
