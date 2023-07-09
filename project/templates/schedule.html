@@ -15,10 +15,7 @@
             </select>
         </label>
     </form>
-    <p id="selected-doctor"></p>
 </div>
-
-
 
 <div id='calendar'></div>
 
@@ -35,29 +32,7 @@
                 right: 'timeGridWeek,timeGridDay',
             },
             contentHeight: 'auto',
-            events: {
-                url: '/get_schedule',
-                method: 'GET',
-                extraParams: {
-                    doctor_dropdown: function () {
-                        return document.querySelector('select[name="doctor_dropdown"]').value;
-                    }
-                },
-                success: function (response) {
-                    const events = response.map(function (event) {
-                        return {
-                            title: event.title,
-                            daysOfWeek: event.daysOfWeek,
-                            startTime: event.startTime,
-                            endTime: event.endTime,
-                        };
-                    });
-                    calendar.setOption('events', events);
-                },
-                failure: function () {
-                    alert('Błąd pobierania harmonogramu pracownika.');
-                }
-            },
+            events: {{ events | tojson }},
             hiddenDays: [0],
             buttonText: {
                 week: 'Tydzień',
@@ -68,9 +43,9 @@
         });
 
         calendar.render();
-});
+    });
 </script>
 
-</body>
+
 
 {% endblock %}

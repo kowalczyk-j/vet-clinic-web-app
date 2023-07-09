@@ -61,7 +61,7 @@
             },
             contentHeight: 'auto',
             events: {
-                url : '/send-appointments',
+                url : '/send_appointments',
                 method : 'GET',
  
                 },
@@ -97,9 +97,9 @@
     
         <div class="row flex-lg-nowrap">
             <table id="appointments">
+            <caption>Tabela umówionych wizyt</caption>
                 <thead>
                     <tr>
-                        <!-- <th> </th> -->
                         <th>Id</th>
                         <th>Data</th>
                         <th>Godzina</th>
@@ -126,7 +126,7 @@
                                             data-target="#change-time-form" data-appointment-id="{{ appointment.id }}"
                                             data-new-day="{{ appointment.date.strftime('%Y-%m-%d') }}" data-start-hour="{{ appointment.time.strftime('%H:%M') }}">Przełóż</button>
                                     <button class="btn btn-sm btn-outline-secondary badge delete-btn" type="button" data-toggle="modal" data-target="#confirmation" appointment_id="{{ appointment.id }}">
-                                        <img class="trashy" src="../static/css/trash.png" width="25" height="25">
+                                        <img class="trashy" src="../static/css/trash.png" alt="trash icon" width="25" height="25">
                                     </button>
                                     
                                 </div>
@@ -149,7 +149,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                    <form class="form" action="/add-appointment" method="POST">
+                    <form class="form" action="/add_appointment" method="POST">
                         <label for="date">Data:</label>
                         <input type="date" name="date" required>
                         <label for="time">Godzina:</label>
@@ -203,8 +203,8 @@
     </div>
 
 <!-- edit time of appointment form -->
-<div class="modal fade" role="dialog" tabindex="-1" id="change-time-form"> 
-    <div class="py-1">       
+<div class="modal fade" role="dialog" tabindex="-1" id="change-time-form">
+    <div class="py-1">
       <div class="modal-dialog modal-lg" role="document">
           <div class = 'modal-content'>
               <div class="modal-header">
@@ -218,7 +218,7 @@
                   <div class="form-group">
                     <label for="new_day">Nowy dzień wizyty:</label>
                     <input type="date" name="new_day" id="new_day" required placeholder="...">
-                  </div>                    
+                  </div>
                   <div class="form-group">
                       <label for="start_hour">Nowa godzina rozpoczęcia wizyty:</label>
                       <input type="time" name="start_hour" id="start_hour" required placeholder="...">
@@ -234,7 +234,7 @@
 
 
 <!-- confirmation window -->
-<div class="modal fade" role="dialog" tabindex="0" id="confirmation" action=""> 
+<div class="modal fade" role="dialog" tabindex="0" id="confirmation" action="">
     <div class="py-1">
         <div class="modal-dialog modal-lg">
             <div class = 'modal-content'>
@@ -295,10 +295,9 @@
 
 <script>
     function searchFunction() {
-      // Declare variables
       var input, filter, table, tr, td, i, txtValue;
       input = document.getElementById("pesel");
-      filter = input.value.toString().toLowerCase(); // Convert filter value to lowercase for case-insensitive search
+      filter = input.value.toString().toLowerCase();
       table = document.getElementById("appointments");
       tr = table.getElementsByTagName("tr");
 
