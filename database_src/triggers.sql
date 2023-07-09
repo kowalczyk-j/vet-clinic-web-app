@@ -354,7 +354,7 @@ CREATE TRIGGER check_schedule_day_format
 BEFORE INSERT ON employee_schedule
 FOR EACH ROW
 BEGIN
-    IF NEW.week_day NOT BETWEEN (1, 7) THEN
+    IF NEW.week_day NOT BETWEEN 1 AND 7 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid weekday format. Use numbers from 1 (Sunday) to 7 (Saturday).';
     END IF;
 END //

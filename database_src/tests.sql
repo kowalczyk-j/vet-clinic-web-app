@@ -51,17 +51,17 @@ UPDATE employee SET salary = 101 WHERE employee_id = 1;
 
 # rekord w grafiku musi posiadać dzień w odpowiednim formacie (Pon, Wt, Śr, Czw, Pt, Sob)
 INSERT INTO employee_schedule (employee_id, week_day, hour_start, hour_end)
-VALUES (1, 'ŚRD', '10:00', '12:00');
+VALUES (1, 8, '10:00', '12:00');
 
 # nie da się dodać rekordu w grafiku dla pracownika, który w danym dniu już ma zdefiniowane godziny pracy
 INSERT INTO employee_schedule (employee_id, week_day, hour_start, hour_end)
-VALUES (1, 'Pon', '10:00', '12:00');
+VALUES (1, 2, '10:00', '12:00');
 
 # harmonogram umożliwia sprawdzenie dostępności konkretnego pracownika w danym dniu i godzinie
 SELECT *
 FROM employee_schedule
 WHERE employee_id = 1
-AND week_day = 'Pon'
+AND week_day = 2
 AND '12:00:00' BETWEEN hour_start AND hour_end;
 
 # harmonogram umożliwia wygenerowanie godzin pracy wszystkich pracowników na danym stanowisku i danego dnia
@@ -70,7 +70,7 @@ FROM employee e
 JOIN employee_schedule es ON e.employee_id = es.employee_id
 JOIN position p on e.position_id = p.position_id
 WHERE p.name = 'Recepcjonista'
-AND es.week_day = 'Pon'
+AND es.week_day = 2
 ORDER BY es.hour_start;
 
 # MODUŁ ZARZĄDZANIA PACJENTAMI
