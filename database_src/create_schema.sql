@@ -115,7 +115,7 @@ CREATE TABLE procedure_appointment (
 CREATE TABLE employee_schedule (
   schedule_id INT NOT NULL AUTO_INCREMENT,
   employee_id INT NOT NULL,
-  week_day CHAR(3) NOT NULL,
+  week_day INT NOT NULL,
   hour_start TIME,
   hour_end TIME,
   PRIMARY KEY (schedule_id),

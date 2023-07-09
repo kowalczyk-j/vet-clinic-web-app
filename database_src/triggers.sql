@@ -257,22 +257,12 @@ BEGIN
 
     SET appointment_day_of_week = DAYOFWEEK(NEW.date);
 
-    SET day_of_week_to_char = CASE
-        WHEN appointment_day_of_week = 1 THEN 'Ndz'
-        WHEN appointment_day_of_week = 2 THEN 'Pon'
-        WHEN appointment_day_of_week = 3 THEN 'Wt'
-        WHEN appointment_day_of_week = 4 THEN 'Śr'
-        WHEN appointment_day_of_week = 5 THEN 'Czw'
-        WHEN appointment_day_of_week = 6 THEN 'Pt'
-        WHEN appointment_day_of_week = 7 THEN 'Sob'
-    END;
-
     SELECT employee_id INTO vets_employee_id FROM vet WHERE vet.vet_id = NEW.vet_id;
 
     IF NOT EXISTS (
         SELECT * FROM employee_schedule es
         WHERE es.employee_id = vets_employee_id
-        AND es.week_day = day_of_week_to_char
+        AND es.week_day = appointment_day_of_week
         AND NEW.time >= es.hour_start
         AND NEW.time < es.hour_end
     ) THEN
@@ -292,22 +282,12 @@ BEGIN
 
     SET appointment_day_of_week = DAYOFWEEK(NEW.date);
 
-    SET day_of_week_to_char = CASE
-        WHEN appointment_day_of_week = 1 THEN 'Ndz'
-        WHEN appointment_day_of_week = 2 THEN 'Pon'
-        WHEN appointment_day_of_week = 3 THEN 'Wt'
-        WHEN appointment_day_of_week = 4 THEN 'Śr'
-        WHEN appointment_day_of_week = 5 THEN 'Czw'
-        WHEN appointment_day_of_week = 6 THEN 'Pt'
-        WHEN appointment_day_of_week = 7 THEN 'Sob'
-    END;
-
     SELECT employee_id INTO vets_employee_id FROM vet WHERE vet.vet_id = NEW.vet_id;
 
     IF NOT EXISTS (
         SELECT * FROM employee_schedule es
         WHERE es.employee_id = vets_employee_id
-        AND es.week_day = day_of_week_to_char
+        AND es.week_day = appointment_day_of_week
         AND NEW.time >= es.hour_start
         AND NEW.time < es.hour_end
     ) THEN
@@ -374,8 +354,8 @@ CREATE TRIGGER check_schedule_day_format
 BEFORE INSERT ON employee_schedule
 FOR EACH ROW
 BEGIN
-    IF NEW.week_day NOT IN ('Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob') THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid weekday format. Give one of: Pon, Wt, Śr, Czw, Pt, Sob.';
+    IF NEW.week_day NOT BETWEEN (1, 7) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid weekday format. Use numbers from 1 (Sunday) to 7 (Saturday).';
     END IF;
 END //
 
