@@ -82,7 +82,7 @@ def send_appointments_data_to_calendar():
         appointment_datetime = datetime.combine(appointment.date, appointment.time)
         animal, owner, vet, room = get_appointment_details(appointment)
         calendar_tile = {
-            'title': f"{animal.name} ({owner.surname}) \n dr. {vet.name} {vet.surname} \n Sala {room.number}",
+            'title': f"{animal.name} ({owner.surname}) \n dr. {vet.name} {vet.surname} \n Sala {room.room_number}",
             'start': appointment_datetime.isoformat(),
             'end': (appointment_datetime + appointment.duration).isoformat(),
             'color': '#00bcd4',
