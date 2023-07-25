@@ -1,18 +1,26 @@
-# Bazy Danych 2 - projekt kliniki weterynaryjnej
-**Zespół 31.:** Magdalena Dudek, Kinga Świderek, Jan Hapunik, Jakub Kowalczyk
+# Klinika weterynaryjna wraz z bazą danych MySQL
+**Autorzy:** Jakub Kowalczyk i Kinga Świderek (Backend), Magdalena Dudek i Jan Hapunik (Frontend)
 
 ## Opis 
 W ramach projektu zamodelowaliśmy system do efektywnego prowadzenia przychodni weterynaryjnej z poziomu menedżera bądź recepcjonisty. System będzie składał się z kilku modułów, które pozwolą na łatwe zarządzanie pacjentami, wizytami, kadrami pracowniczymi, a także pozwolą na monitorowanie grafików sal zabiegowych, rodzajów badań czy przepisanych recept.
 
 Moduł zarządzania pacjentami pozwoli na dodawanie i edycję informacji o zwierzętach, w tym danych właściciela, historii chorób i przebiegu leczenia. Będzie również umożliwiał generowanie raportów o pacjentach, w tym o najczęstszych chorobach, przepisanych lekach czy zabiegach. Dzięki temu lekarz skróci czas wywiadu z pacjentem; zwierzę uzyska szybszą, fachową pomoc sprawdzonymi metodami; a recepcjonista uzyska ułatwiony dostęp do informacji w jednym miejscu i będzie mógł je z łatwością skorygować po rozmowie z klientem.
 
-Moduł wizyt pozwoli na łatwe rezerwowanie terminów wizyt przez pracowników przychodni podczas kontaktu telefonicznego z pacjentem. Opcjonalnie, wprowadzimy również system rezerwacji online samym klientom, którzy w wygodny sposób mogliby dokonać przełożenia czy odwołania wizyty. Lekarz przy każdej wizycie będzie mógł zapisać notatki, wyniki badań i zalecone leki, które zostaną przekazane klientowi w formie raportu wraz z automatycznie utworzoną fakturą za usługi. 
+Moduł wizyt pozwoli na łatwe rezerwowanie terminów wizyt przez pracowników przychodni podczas kontaktu telefonicznego z pacjentem. Lekarz przy każdej wizycie będzie mógł zapisać notatki, wyniki badań i zalecone leki, które zostaną przekazane klientowi w formie raportu wraz z automatycznie utworzoną fakturą za usługi. 
 
 Moduł zarządzania kadrami umożliwi rozporządzanie harmonogramem pracy pracowników, rewizję ich dostępności oraz przypisywanie im konkretnych obowiązków. Dzięki wygenerowanym danym o czasie pracy, liczbie zrealizowanych świadczeń i ogólnej satysfakcji klientów, menedżer będzie mógł sprawiedliwie przyznać nagrody lub podwyżki pensji. 
 
 Moduł zarządzania zaopatrzeniem będzie odpowiadał za kontrolę stanu i ilości narzędzi, opatrunków i substancji potrzebnych do wykonania zabiegów weterynaryjnych, a także umożliwi odpowiednie rozlokowanie inwentarza w różnych salach operacyjnych.
 
 System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na łatwe i szybkie korzystanie z niego z dowolnego miejsca i urządzenia.
+
+## Aplikacja webowa
+Implementacja obejmuje zarządzanie pacjentami, wizytami, płatnościami oraz wgląd do harmonogramu pracy z poziomu recepcjonisty.
+![web_app_calendar](https://i.postimg.cc/1RKwdJnr/vetcare-calendar.png)
+![web_app_adding_appointment](https://i.postimg.cc/0yzSbvtV/vetcare-calendar2.png)
+![web_app_patients](https://i.postimg.cc/XJbBHCnP/vetcare-patients.png)
+![web_app_payments](https://i.postimg.cc/HkFyMNRd/vetcare-payments.png)
+![web_app_employee_schedule](https://i.postimg.cc/N0Trk4vT/vetcare-schedule.png)
 
 # Model ER
 ![klinika weterynaryjna model er](database_models/klinika_weterynaryjna-model_ER.png)
@@ -22,12 +30,12 @@ System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na ła
 
 # Wstępne założenia projektowe:
 
-1. **Personel.** Dostęp do systemu posiadają zatrudnieni w klinice lekarze, recepcjoniści (konsultanci telefoniczni) i menedżer. Wszyscy posiadają do wglądu i możliwości edycji informacje o wizytach wraz z opłatami oraz zwierzętach i ich właścicielach. Wszyscy (recepcjonista tylko na prośbę lekarza) mogą zarządzać stanem zaplecza medycznego (stan leków, zaopatrzenie sal, sprzęt medyczny). Tylko menedżer może modyfikować grafik innych pracowników i przyznawać im pensje. Właściciel kliniki posiada dostęp na prawach menedżera.
-2. **Klienci.** Aby umówić się na wizytę klienci kontaktują się telefonicznie z konsultantem - recepcjonistą, który to zapisuje ich dane do systemu. Oczywiście, istnieje możliwość wprowadzenia danych podczas rozmowy stacjonarnie. System jest użytkowany przez wyszkoloną osobę, więc klient nie posiada do niego dostępu (opcjonalnie zostanie wprowadzony moduł z informacjami i umawianiem wizyty online przez klienta). Klient może posiadać kilka zwierząt zapisanych w klinice.
-3. **Wizyty.** Aby zachować spójność danych każda wizyta musi mieć przypisanego lekarza, numer sali, konkretne zwierzę, datę i godzinę, a także rodzaj zabiegów (może być to zwykła konsultacja lub badanie przeglądowe). Każdy lekarz ma przypisaną specjalizację, która powinna być konsekwentna z rodzajem leczonego zwierzęcia (dopuszcza się wyjątki). Każde zwierzę ma swoją historię chorób, w której znajduje się nazwa, opis choroby, data diagnozy i data ozdrowienia. Data ozdrowienia jest opcjonalna i poglądowa - nie zawsze da się ją ewidencjonować, np. w przypadku gdy zwierzę wyleczy się kilka dni po przepisaniu leków w warunkach domowych.
-4. **Sale i sprzęt medyczny.** Poza zwykłymi badaniami, w klinice wykonuje się poważniejsze zabiegi i operacje, które wymagają odpowiednich narzędzi (noże, szczypce, strzykawki, inna aparatura medyczna). Lekarz przed przystąpieniem do zabiegu może sprawdzić stan zaopatrzenia odpowiedniej sali, do której na stałe przypisane są odpowiednie przedmioty. Po zakończonej operacji w przypadku zużycia jakiegoś materiału bądź uszkodzenia fizycznego sprzętu, lekarz musi zaktualizować stan w systemie lub zlecić to pracownikowi na recepcji. W przypadku przeniesienia rzeczy, również należy ręcznie uaktualnić jego przynależność. Raz na jakiś czas odbywa się przegląd techniczny w obecności menedżera, dlatego posiada on możliwość edytowania stanu sprzętu.
+1. **Personel.** Dostęp do systemu posiadają zatrudnieni w klinice lekarze, recepcjoniści (konsultanci telefoniczni) i menedżer. Wszyscy posiadają do wglądu informacje o wizytach wraz z opłatami oraz zwierzętach i ich właścicielach. Wszyscy, poza recepcjonistą, mogą edytować te informacje oraz zarządzać stanem zaplecza medycznego (stan leków, zaopatrzenie sal, sprzęt medyczny). Tylko menedżer może modyfikować grafik innych pracowników i przyznawać im pensje. Właściciel kliniki posiada dostęp na prawach menedżera.
+2. **Klienci.** Aby umówić się na wizytę klienci kontaktują się telefonicznie z konsultantem - recepcjonistą, który to zapisuje ich dane do systemu. Oczywiście, istnieje możliwość wprowadzenia danych podczas rozmowy stacjonarnie. System jest użytkowany przez wyszkoloną osobę, więc klient nie posiada do niego dostępu. Klient może posiadać kilka zwierząt zapisanych w klinice.
+3. **Wizyty.** Aby zachować spójność danych każda wizyta musi mieć przypisanego lekarza, numer sali, konkretne zwierzę, datę i godzinę, a także rodzaj zabiegów (może być to zwykłe badanie ogólne). Każdy lekarz ma przypisaną specjalizację, która powinna być konsekwentna z rodzajem leczonego zwierzęcia (dopuszcza się wyjątki). Każde zwierzę ma swoją historię chorób, w której znajduje się nazwa, opis choroby, data diagnozy i data ozdrowienia. Data ozdrowienia jest opcjonalna i poglądowa - nie zawsze da się ją ewidencjonować, np. w przypadku gdy zwierzę wyleczy się kilka dni po przepisaniu leków w warunkach domowych.
+4. **Sale i sprzęt medyczny.** Poza zwykłymi badaniami, w klinice wykonuje się poważniejsze zabiegi i operacje, które wymagają odpowiednich narzędzi (noże, szczypce, strzykawki, inna aparatura medyczna). Lekarz przed przystąpieniem do zabiegu może sprawdzić stan zaopatrzenia odpowiedniej sali, do której na stałe przypisane są odpowiednie przedmioty. Po zakończonej operacji w przypadku zużycia jakiegoś materiału bądź uszkodzenia fizycznego sprzętu, lekarz musi zaktualizować stan w systemie lub zlecić to innemu pracownikowi. W przypadku przeniesienia rzeczy, również należy ręcznie uaktualnić ich przynależność. Raz na jakiś czas odbywa się przegląd techniczny w obecności menedżera, dlatego posiada on możliwość edytowania stanu sprzętu.
 5. **Inwentarz.** Poza sprzętem na salach zabiegowych, istnieje jeden centralny magazyn, w którym przechowuje się zapasy leków, opatrunków, kroplówek i monitoruje się ich ilościowy stan. W przypadku gdy klient podczas wizyty otrzymuje lek, stan inwentarza jest automatycznie pomniejszany. Gdy lekarz wyciąga z magazynu rzeczy potrzebne do zabiegu bądź wyrzuca przeterminowane leki powinien ręcznie zaktualizować jego stan (lub zlecić to innemu pracownikowi).
-6. **Opłaty.** Każda wizyta ma przypisany konkretny zabieg i leki, dzięki czemu wiadomo ile będzie kosztować. Po zakończonych badaniach, na podstawie wcześniej wprowadzonych danych, generowana jest faktura na osobę fizyczną. Nie ma możliwości wystawienia faktury na firmę. Istnieją 4 metody płatności: gotówką, kartą, BLIKiem lub voucherem.
+6. **Opłaty.** Każda wizyta w zależności od rodzaju zabiegów, zwierzęcia czy zużytych materiałów ma cenę ustalaną indywidualnie. Po zakończonych badaniach, na podstawie wcześniej wprowadzonych danych, generowana jest faktura na osobę fizyczną. Nie ma możliwości wystawienia faktury na firmę. Istnieją 4 metody płatności: gotówką, kartą, BLIKiem lub voucherem.
 7. **Grafik pracowników.** Każdy pracownik ma przypisany przedział godzinowy pracy w danym dniu tygodnia. Klinika jest otwarta we wszystkie dni poza niedzielami i świętami państwowymi (jeżeli takie wypadnie w dzień powszedni - pracownik wie, że ma wolne i nie stosuje się do harmonogramu). Grafik jest zarządzany wyłącznie przez menedżera tak samo jak informacje o pracownikach takie jak wypłaty i premie.
 
 
@@ -128,35 +136,3 @@ Upewnienie się, że inwentarz jest poprawnie rozmieszczony w różnych salach o
 **c.** Testowanie różnych metod płatności: gotówka, karta, BLIK, voucher.
 
 W przypadku każdego modułu testowego należy sprawdzić, czy interakcje między modułami działają poprawnie i przekazują prawidłowe dane. Należy również przetestować sytuacje wyjątkowe i obsługę błędów, takie jak próba dostępu do danych przez nieuprawnionego użytkownika, brak wymaganych pól w formularzach itp.
-
-
-
-(możliwe do dodania :
-
-**Testowanie bezpieczeństwa:**
-
-**a.** Przeprowadzenie testów penetracyjnych, aby sprawdzić, czy system jest odporny na ataki zewnętrzne.
-
-**b.** Testowanie mechanizmów uwierzytelniania i uprawnień, aby upewnić się, że dostęp do danych jest odpowiednio chroniony.
-
-**Testowanie wydajności:**
-
-**a.** Przeprowadzenie testów obciążeniowych, aby ocenić wydajność systemu podczas dużej liczby użytkowników i transakcji.
-
-**b.** Sprawdzenie czasu odpowiedzi systemu i szybkości przetwarzania różnych operacji.
-
-**Testowanie przywracania danych:**
-
-**a.** Wykonanie testów przywracania danych po awarii systemu lub utracie połączenia, aby upewnić się, że dane są bezpieczne i można je przywrócić w przypadku problemów technicznych.
-
-**Interfejs i dostęp:**
-
-**a.** Testowanie dostępności systemu z poziomu przeglądarki internetowej.
-
-**b.** Testowanie łatwości korzystania z systemu z różnych urządzeń.
-
-**c.** Testowanie uprawnień dostępu dla personelu i właściciela kliniki.
-)
-
-
-
