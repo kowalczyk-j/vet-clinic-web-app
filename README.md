@@ -16,11 +16,10 @@ System będzie dostępny z poziomu przeglądarki internetowej, co pozwoli na ła
 
 ## Aplikacja webowa
 Implementacja obejmuje zarządzanie pacjentami, wizytami, płatnościami oraz wgląd do harmonogramu pracy z poziomu recepcjonisty.
-![web_app_calendar](https://i.postimg.cc/1RKwdJnr/vetcare-calendar.png)
-![web_app_adding_appointment](https://i.postimg.cc/0yzSbvtV/vetcare-calendar2.png)
-![web_app_patients](https://i.postimg.cc/XJbBHCnP/vetcare-patients.png)
-![web_app_payments](https://i.postimg.cc/HkFyMNRd/vetcare-payments.png)
-![web_app_employee_schedule](https://i.postimg.cc/N0Trk4vT/vetcare-schedule.png)
+![web_app_calendar](https://i.postimg.cc/L5MtdW2m/vetcare-calendar.png)
+![web_app_adding_appointment](https://i.postimg.cc/bYQ00q9r/vetcare-calendar2.png)
+![web_app_payments](https://i.postimg.cc/cCMQdcLw/vetcare-payments.png)
+![web_app_schedule](https://i.postimg.cc/KvxPJC0N/vetcare-schedule.png)
 
 # Model ER
 ![klinika weterynaryjna model er](database_models/klinika_weterynaryjna-model_ER.png)
